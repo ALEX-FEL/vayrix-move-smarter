@@ -77,6 +77,7 @@ export function VehicleSelectionModal({
               const price = calculatePrice(vehicle);
               const isSelected = selected === vehicle;
               const isHovered = hovered === vehicle;
+              const Icon = vehicleData[vehicle].icon;
 
               return (
                 <button
@@ -106,7 +107,7 @@ export function VehicleSelectionModal({
                       }`}
                     />
                     <div className="absolute top-3 right-3 h-10 w-10 rounded-full bg-gradient-primary/90 flex items-center justify-center shadow-glow">
-                      <Icon className="h-5 h-5 text-white" />
+                      <Icon className="h-5 w-5 text-white" />
                     </div>
                   </div>
 

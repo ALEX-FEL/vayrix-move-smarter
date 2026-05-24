@@ -56,15 +56,17 @@ function Auth() {
       <div className="flex flex-col h-full min-h-screen sm:min-h-[860px]">
         <div className="flex items-center justify-between px-4 pt-2">
           <StatusBar />
-          <LanguageSelector />
         </div>
         <div className="flex-1 px-6 pt-6 pb-8 flex flex-col">
-          <div className="flex items-center gap-3 animate-float-up">
-            <VayrixLogo size={48} />
-            <div>
-              <h2 className="text-xl font-bold text-gradient-primary">Vayrix</h2>
-              <p className="text-xs text-[#B8BED6]">Move smarter</p>
+          <div className="flex items-center justify-between animate-float-up">
+            <div className="flex items-center gap-3">
+              <VayrixLogo size={48} />
+              <div>
+                <h2 className="text-xl font-bold text-gradient-primary">Vayrix</h2>
+                <p className="text-xs text-[#B8BED6]">Move smarter</p>
+              </div>
             </div>
+            <LanguageSelector />
           </div>
 
           <div className="mt-8 animate-float-up [animation-delay:80ms]">
