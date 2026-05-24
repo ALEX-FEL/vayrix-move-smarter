@@ -15,7 +15,6 @@ function Completed() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [rating, setRating] = useState(5);
-  const [tip, setTip] = useState<number | null>(null);
 
   return (
     <PhoneFrame>
@@ -60,25 +59,6 @@ function Completed() {
                       n <= rating ? "fill-yellow-400 text-yellow-400" : "text-white/20"
                     }`}
                   />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-2 animate-float-up [animation-delay:140ms]">
-            <p className="text-xs uppercase tracking-widest text-[#B8BED6]">{t.completed.addTip}</p>
-            <div className="grid grid-cols-4 gap-2">
-              {[0, 200, 500, 1000].map((v) => (
-                <button
-                  key={v}
-                  onClick={() => setTip(v)}
-                  className={`h-12 rounded-xl text-sm font-semibold border transition ${
-                    tip === v
-                      ? "bg-gradient-primary border-transparent text-white shadow-glow"
-                      : "bg-[#141B3D] border-white/5 text-[#B8BED6]"
-                  }`}
-                >
-                  {v === 0 ? t.completed.noTip : `+${v}`}
                 </button>
               ))}
             </div>

@@ -4,7 +4,7 @@ import { PhoneFrame } from "@/components/PhoneFrame";
 import { StatusBar } from "@/components/StatusBar";
 import { GoogleMap } from "@/components/GoogleMap";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { ArrowLeft, Phone, X, Share2 } from "lucide-react";
+import { ArrowLeft, Phone, X } from "lucide-react";
 import { useLanguage } from "@/hooks/use-language";
 import { useGeolocation } from "@/hooks/use-geolocation";
 
@@ -98,9 +98,8 @@ function Tracking() {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <ActionBtn icon={<Phone className="h-4 w-4" />} label={t.tracking.call} />
-            <ActionBtn icon={<Share2 className="h-4 w-4" />} label={t.tracking.share} />
             <ActionBtn
               icon={<X className="h-4 w-4" />}
               label={t.tracking.cancel}
