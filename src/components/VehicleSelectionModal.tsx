@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Check, Bike, Car, Crown, Clock, Users, Zap } from "lucide-react";
+import { X, Check, Bike, Car, Crown, Zap } from "lucide-react";
 import { useLanguage } from "@/hooks/use-language";
 
 type VehicleType = "moto" | "standard" | "premium";
@@ -10,33 +10,25 @@ const vehicleData: {
     basePrice: number;
     multiplier: number;
     icon: typeof Bike;
-    eta: string;
-    capacity: number;
   };
 } = {
   moto: {
-    image: "https://images.unsplash.com/photo-1558981806-ec5f2d0c4c7b?w=800&auto=format&fit=crop&q=60",
+    image: "https://images.pexels.com/photos/104842/bmw-motorcycle-model-bike-motor-104842.jpeg?auto=compress&cs=tinysrgb&w=800",
     basePrice: 500,
     multiplier: 0.7,
     icon: Bike,
-    eta: "2-4 min",
-    capacity: 1,
   },
   standard: {
-    image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&auto=format&fit=crop&q=60",
+    image: "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800",
     basePrice: 1000,
     multiplier: 1.0,
     icon: Car,
-    eta: "3-5 min",
-    capacity: 4,
   },
   premium: {
-    image: "https://images.unsplash.com/photo-1503376780353-7e8893495856?w=800&auto=format&fit=crop&q=60",
+    image: "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=800",
     basePrice: 2000,
     multiplier: 1.5,
     icon: Crown,
-    eta: "4-6 min",
-    capacity: 4,
   },
 };
 
@@ -143,7 +135,7 @@ export function VehicleSelectionModal({
                     : "border-white/5 hover:border-white/15"
                 }`}
               >
-                <div className="relative h-36 sm:h-32 overflow-hidden">
+                <div className="relative h-32 sm:h-28 overflow-hidden">
                   <img
                     src={vehicleData[vehicle].image}
                     alt={vehicle}
@@ -155,19 +147,6 @@ export function VehicleSelectionModal({
 
                   <div className="absolute top-3 right-3 h-11 w-11 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
                     <Icon className="h-5 w-5 text-white" />
-                  </div>
-
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1 bg-black/40 backdrop-blur-sm rounded-lg px-2 py-1">
-                        <Clock className="h-3 w-3 text-white" />
-                        <span className="text-xs font-medium text-white">{vehicleData[vehicle].eta}</span>
-                      </div>
-                      <div className="flex items-center gap-1 bg-black/40 backdrop-blur-sm rounded-lg px-2 py-1">
-                        <Users className="h-3 w-3 text-white" />
-                        <span className="text-xs font-medium text-white">{vehicleData[vehicle].capacity}</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
