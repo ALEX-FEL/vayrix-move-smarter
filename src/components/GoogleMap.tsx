@@ -2,10 +2,68 @@ import { useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
-    google: typeof google;
+    google: {
+      maps: {
+        Map: new (element: HTMLElement, opts?: Record<string, unknown>) => unknown;
+        Marker: new (opts?: Record<string, unknown>) => unknown;
+        DirectionsService: new () => unknown;
+        DirectionsRenderer: new (opts?: Record<string, unknown>) => unknown;
+        TravelMode: {
+          DRIVING: string;
+          WALKING: string;
+          BICYCLING: string;
+          TRANSIT: string;
+        };
+        ControlPosition: {
+          TOP_RIGHT: number;
+          RIGHT_CENTER: number;
+          BOTTOM_RIGHT: number;
+        };
+        SymbolPath: {
+          CIRCLE: number;
+          FORWARD_CLOSED_ARROW: number;
+          BACKWARD_CLOSED_ARROW: number;
+        };
+      };
+    };
     initGoogleMap?: () => void;
   }
 }
+
+type GoogleMapType = {
+  setCenter: (latlng: { lat: number; lng: number }) => void;
+  setZoom: (zoom: number) => void;
+  setMapTypeId: (mapTypeId: string) => void;
+  setOptions: (opts: Record<string, unknown>) => void;
+  addListener: (event: string, handler: (e: GoogleMapMouseEvent) => void) => void;
+};
+
+type GoogleMapMouseEvent = {
+  latLng: {
+    lat: () => number;
+    lng: () => number;
+  };
+};
+
+type GoogleMarker = {
+  setMap: (map: GoogleMapType | null) => void;
+};
+
+type GoogleDirectionsService = {
+  route: (
+    request: {
+      origin: { lat: number; lng: number };
+      destination: { lat: number; lng: number };
+      travelMode: string;
+    },
+    callback: (result: unknown, status: string) => void
+  ) => void;
+};
+
+type GoogleDirectionsRenderer = {
+  setMap: (map: GoogleMapType | null) => void;
+  setDirections: (result: unknown) => void;
+};
 
 type MapStyle = "roadmap" | "satellite" | "terrain" | "hybrid";
 
@@ -42,13 +100,13 @@ export function GoogleMap({
   onMapClick,
 }: GoogleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [map, setMap] = useState<GoogleMapType | null>(null);
   const [currentStyle, setCurrentStyle] = useState<MapStyle>("roadmap");
   const [isLoading, setIsLoading] = useState(true);
-  const markersRef = useRef<google.maps.Marker[]>([]);
-  const driversRef = useRef<google.maps.Marker[]>([]);
-  const directionsRendererRef = useRef<google.maps.DirectionsRenderer | null>(null);
-  const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
+  const markersRef = useRef<GoogleMarker[]>([]);
+  const driversRef = useRef<GoogleMarker[]>([]);
+  const directionsRendererRef = useRef<GoogleDirectionsRenderer | null>(null);
+  const directionsServiceRef = useRef<GoogleDirectionsService | null>(null);
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -98,12 +156,12 @@ export function GoogleMap({
       zoomControlOptions: {
         position: window.google.maps.ControlPosition.RIGHT_CENTER,
       },
-    });
+    }) as unknown as GoogleMapType;
 
     mapInstance.setMapTypeId(currentStyle);
 
     if (onMapClick) {
-      mapInstance.addListener("click", (e: google.maps.MapMouseEvent) => {
+      mapInstance.addListener("click", (e: GoogleMapMouseEvent) => {
         if (e.latLng) {
           onMapClick(e.latLng.lat(), e.latLng.lng());
         }
@@ -113,15 +171,16 @@ export function GoogleMap({
     setMap(mapInstance);
     setIsLoading(false);
 
-    directionsServiceRef.current = new window.google.maps.DirectionsService();
-    directionsRendererRef.current = new window.google.maps.DirectionsRenderer({
+    directionsServiceRef.current = new window.google.maps.DirectionsService() as unknown as GoogleDirectionsService;
+    const renderer = new window.google.maps.DirectionsRenderer({
       suppressMarkers: false,
       polylineOptions: {
         strokeColor: "#7B5CFF",
         strokeWeight: 4,
       },
-    });
-    directionsRendererRef.current.setMap(mapInstance);
+    }) as unknown as GoogleDirectionsRenderer;
+    renderer.setMap(mapInstance);
+    directionsRendererRef.current = renderer;
   }
 
   useEffect(() => {
@@ -136,7 +195,7 @@ export function GoogleMap({
         map,
         title: m.title,
         icon: m.icon || undefined,
-      });
+      }) as unknown as GoogleMarker;
       markersRef.current.push(markerInstance);
     });
   }, [map, markers]);
@@ -160,19 +219,21 @@ export function GoogleMap({
           strokeColor: "#FFFFFF",
           strokeWeight: 2,
         },
-      });
+      }) as unknown as GoogleMarker;
       driversRef.current.push(markerInstance);
     });
   }, [map, drivers]);
 
   useEffect(() => {
     if (!map || !showRoute || !origin || !destination || !directionsServiceRef.current || !directionsRendererRef.current) {
-      if (directionsRendererRef.current) {
-        directionsRendererRef.current.setDirections({ routes: [] } as google.maps.DirectionsResult);
+      const renderer = directionsRendererRef.current;
+      if (renderer) {
+        renderer.setDirections({ routes: [] });
       }
       return;
     }
 
+    const renderer = directionsRendererRef.current;
     directionsServiceRef.current.route(
       {
         origin,
@@ -180,8 +241,8 @@ export function GoogleMap({
         travelMode: window.google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
-        if (status === "OK" && result && directionsRendererRef.current) {
-          directionsRendererRef.current.setDirections(result);
+        if (status === "OK" && result && renderer) {
+          renderer.setDirections(result);
         }
       }
     );
@@ -210,7 +271,7 @@ export function GoogleMap({
   );
 }
 
-function getDarkMapStyle(): google.maps.MapTypeStyle[] {
+function getDarkMapStyle() {
   return [
     { elementType: "geometry", stylers: [{ color: "#0A0E27" }] },
     { elementType: "labels.text.stroke", stylers: [{ color: "#0A0E27" }] },

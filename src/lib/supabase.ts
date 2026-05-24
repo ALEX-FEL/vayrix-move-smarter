@@ -1,13 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const getSupabaseConfig = () => {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
-}
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('Supabase environment variables not configured. Using fallback values for SSR build.');
+    return {
+      url: 'https://placeholder.supabase.co',
+      key: 'placeholder-key',
+    };
+  }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  return { url: supabaseUrl, key: supabaseAnonKey };
+};
+
+const config = getSupabaseConfig();
+
+export const supabase = createClient(config.url, config.key, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
