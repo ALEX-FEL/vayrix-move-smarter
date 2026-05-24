@@ -52,10 +52,13 @@ function Home() {
   };
 
   const handleVehicleConfirm = (vehicle: VehicleType, price: number) => {
-    navigate({
-      to: "/booking",
-      search: { destination, vehicle, price },
-    });
+    setShowVehicleModal(false);
+    setTimeout(() => {
+      navigate({
+        to: "/booking",
+        search: { destination, vehicle, price },
+      });
+    }, 100);
   };
 
   const selectSuggestion = (place: typeof popularPlaces[0]) => {
