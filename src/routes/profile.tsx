@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { Home, Briefcase, Plus, CreditCard, Bell, Shield, LogOut, ChevronRight, Edit2, Phone, User, Camera, Check } from "lucide-react";
+import { Hop as Home, Briefcase, Plus, CreditCard, Bell, Shield, LogOut, ChevronRight, CreditCard as Edit2, Phone, User, Camera, Check } from "lucide-react";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";

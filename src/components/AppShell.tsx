@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { PhoneFrame } from "./PhoneFrame";
 import { StatusBar } from "./StatusBar";
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Clock, User, MapPin } from "lucide-react";
+import { Hop as Home, Clock, User, MapPin } from "lucide-react";
 import { useLanguage } from "@/hooks/use-language";
 import { LanguageSelector } from "./LanguageSelector";
 
