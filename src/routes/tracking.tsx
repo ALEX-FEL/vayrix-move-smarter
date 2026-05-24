@@ -39,9 +39,8 @@ function Tracking() {
             <p className="text-[10px] uppercase tracking-widest text-[#B8BED6]">Arriving in</p>
             <p className="text-lg font-bold text-gradient-primary tabular-nums">{mm}:{ss}</p>
           </div>
-          <button className="h-10 w-10 rounded-full bg-[#141B3D]/90 backdrop-blur border border-white/10 flex items-center justify-center">
-            <Share2 className="h-4 w-4 text-white" />
-          </button>
+          <div className="h-10 w-10" />
+
         </div>
 
         <div className="absolute bottom-6 left-4 right-4 rounded-2xl bg-[#141B3D]/95 backdrop-blur border border-white/10 p-5 shadow-card animate-float-up space-y-4">

@@ -41,11 +41,6 @@ function Payment() {
             </p>
             <p className="text-sm text-[#B8BED6]">XAF</p>
 
-            <div className="mt-5 grid grid-cols-3 gap-3 text-left">
-              <Detail label="Fare" value="1,350" />
-              <Detail label="Service" value="100" />
-              <Detail label="Tax" value="50" />
-            </div>
           </div>
 
           {/* Methods */}

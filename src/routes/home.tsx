@@ -67,18 +67,6 @@ function Home() {
           </button>
         </section>
 
-        {/* Estimated fare */}
-        <section className="rounded-2xl bg-gradient-to-br from-[#1a2348] to-[#141B3D] border border-white/5 p-4 animate-float-up [animation-delay:120ms]">
-          <div className="flex items-center justify-between">
-            <p className="text-[11px] uppercase tracking-widest text-[#B8BED6]">Estimated fare</p>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-primary text-white">Live</span>
-          </div>
-          <div className="mt-3 grid grid-cols-3 gap-3">
-            <Stat icon={<Navigation className="h-3.5 w-3.5" />} label="Distance" value="7.8 km" />
-            <Stat icon={<Wallet className="h-3.5 w-3.5" />} label="Price (XAF)" value="1,200–1,800" highlight />
-            <Stat icon={<Clock className="h-3.5 w-3.5" />} label="Time" value="15 min" />
-          </div>
-        </section>
 
         {/* Suggestions */}
         <section className="space-y-3 animate-float-up [animation-delay:180ms]">
