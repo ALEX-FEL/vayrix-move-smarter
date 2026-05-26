@@ -88,9 +88,12 @@ function Auth() {
 
             {mode === "login" && (
               <div className="flex justify-end">
-                <button type="button" className="text-xs text-[#B8BED6] hover:text-white">
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-[#B8BED6] hover:text-white transition"
+                >
                   Forgot password?
-                </button>
+                </Link>
               </div>
             )}
 
