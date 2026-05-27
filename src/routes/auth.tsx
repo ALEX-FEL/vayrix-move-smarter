@@ -1,12 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { StatusBar } from "@/components/StatusBar";
 import { VayrixLogo } from "@/components/VayrixLogo";
-import { LanguageSelector } from "@/components/LanguageSelector";
-import { Phone, Lock, Eye, EyeOff, User } from "lucide-react";
-import { useLanguage } from "@/hooks/use-language";
-import { useAuth } from "@/hooks/use-auth";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — Vayrix" }] }),
@@ -16,65 +13,29 @@ export const Route = createFileRoute("/auth")({
 function Auth() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [showPw, setShowPw] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { t } = useLanguage();
-  const { signIn, signUp } = useAuth();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      if (mode === "login") {
-        const { error } = await signIn(phone, password);
-        if (error) throw error;
-        navigate({ to: "/home" });
-      } else {
-        if (!firstName || !lastName) {
-          throw new Error("Please fill in all fields");
-        }
-        const { error } = await signUp(phone, password, firstName, lastName);
-        if (error) throw error;
-        navigate({ to: "/home" });
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <PhoneFrame>
       <div className="flex flex-col h-full min-h-screen sm:min-h-[860px]">
-        {/* <div className="flex items-center justify-between px-4 pt-2">
-          <StatusBar />
-        </div> */}
-        <div className="flex-1 px-6 pt-6 pb-8 flex flex-col">
-          <div className="flex items-center justify-between animate-float-up">
-            <div className="flex items-center gap-3">
-              <VayrixLogo size={48} />
-              <div>
-                <h2 className="text-xl font-bold text-gradient-primary">Vayrix</h2>
-                <p className="text-xs text-[#B8BED6]">Move smarter</p>
-              </div>
+        <StatusBar />
+        <div className="flex-1 px-6 pt-8 pb-8 flex flex-col">
+          <div className="flex items-center gap-3 animate-float-up">
+            <VayrixLogo size={48} />
+            <div>
+              <h2 className="text-xl font-bold text-gradient-primary">Vayrix</h2>
+              <p className="text-xs text-[#B8BED6]">Move smarter</p>
             </div>
-            <LanguageSelector />
           </div>
 
-          <div className="mt-8 animate-float-up [animation-delay:80ms]">
+          <div className="mt-10 animate-float-up [animation-delay:80ms]">
             <h1 className="text-3xl font-bold leading-tight">
-              {mode === "login" ? t.auth.signInTitle : t.auth.signUpTitle}
+              {mode === "login" ? "Welcome back" : "Create account"}
             </h1>
             <p className="mt-2 text-sm text-[#B8BED6]">
-              {mode === "login" ? t.auth.signInSubtitle : t.auth.signUpSubtitle}
+              {mode === "login"
+                ? "Sign in to continue your journey"
+                : "Join thousands moving smarter"}
             </p>
           </div>
 
@@ -82,67 +43,37 @@ function Auth() {
             {(["login", "register"] as const).map((m) => (
               <button
                 key={m}
-                onClick={() => {
-                  setMode(m);
-                  setError(null);
-                }}
+                onClick={() => setMode(m)}
                 className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                   mode === m
                     ? "bg-gradient-primary text-white shadow-glow"
                     : "text-[#B8BED6]"
                 }`}
               >
-                {m === "login" ? t.auth.signIn : t.auth.signUp}
+                {m === "login" ? "Sign in" : "Register"}
               </button>
             ))}
           </div>
 
-          {error && (
-            <div className="mt-3 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
-              {error}
-            </div>
-          )}
-
           <form
             className="mt-6 space-y-3 animate-float-up [animation-delay:120ms]"
-            onSubmit={handleSubmit}
+            onSubmit={(e) => {
+              e.preventDefault();
+              navigate({ to: "/home" });
+            }}
           >
-            {mode === "register" && (
-              <>
-                <Field icon={<User className="h-4 w-4" />} label={t.auth.firstName}>
-                  <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full bg-transparent outline-none text-sm placeholder:text-white/30"
-                    placeholder="John"
-                  />
-                </Field>
-                <Field icon={<User className="h-4 w-4" />} label={t.auth.lastName}>
-                  <input
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full bg-transparent outline-none text-sm placeholder:text-white/30"
-                    placeholder="Doe"
-                  />
-                </Field>
-              </>
-            )}
-            <Field icon={<Phone className="h-4 w-4" />} label={t.auth.phone}>
+            <Field icon={<Mail className="h-4 w-4" />} label="Email">
               <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                type="email"
+                defaultValue="alex@vayrix.com"
                 className="w-full bg-transparent outline-none text-sm placeholder:text-white/30"
-                placeholder="+237 6XX XXX XXX"
+                placeholder="you@vayrix.com"
               />
             </Field>
-            <Field icon={<Lock className="h-4 w-4" />} label={t.auth.password}>
+            <Field icon={<Lock className="h-4 w-4" />} label="Password">
               <input
                 type={showPw ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                defaultValue="••••••••••"
                 className="w-full bg-transparent outline-none text-sm placeholder:text-white/30"
                 placeholder="••••••••"
               />
@@ -158,23 +89,22 @@ function Auth() {
             {mode === "login" && (
               <div className="flex justify-end">
                 <button type="button" className="text-xs text-[#B8BED6] hover:text-white">
-                  {t.auth.forgotPassword}
+                  Forgot password?
                 </button>
               </div>
             )}
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full h-12 rounded-xl bg-gradient-primary text-white font-semibold text-sm shadow-glow hover:opacity-95 transition active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-12 rounded-xl bg-gradient-primary text-white font-semibold text-sm shadow-glow hover:opacity-95 transition active:scale-[0.99]"
             >
-              {loading ? t.common.loading : t.common.continue}
+              Continue
             </button>
           </form>
 
           <div className="my-5 flex items-center gap-3 text-[10px] uppercase tracking-widest text-[#B8BED6]">
             <span className="flex-1 h-px bg-white/10" />
-            {t.common.or}
+            Or
             <span className="flex-1 h-px bg-white/10" />
           </div>
 
@@ -183,14 +113,14 @@ function Auth() {
             className="w-full h-12 rounded-xl bg-[#141B3D] border border-white/10 text-white font-medium text-sm flex items-center justify-center gap-3 hover:bg-[#1a2348] transition"
           >
             <GoogleIcon />
-            {t.auth.signInGoogle}
+            Continue with Google
           </button>
 
           <p className="mt-auto pt-6 text-center text-xs text-[#B8BED6]">
-            {t.auth.termsAgree}{" "}
-            <span className="text-white underline-offset-2 hover:underline cursor-pointer">
-              {t.auth.terms}
-            </span>
+            By continuing you accept our{" "}
+            <Link to="/auth" className="text-white underline-offset-2 hover:underline">
+              Terms
+            </Link>
           </p>
         </div>
       </div>

@@ -113,19 +113,8 @@
 @keyframes dash {
   to { stroke-dashoffset: -40; }
 }
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 .animate-pulse-glow { animation: pulse-glow 2s ease-out infinite; }
 .animate-float-up { animation: float-up 0.5s ease-out both; }
 .animate-car { animation: car-move 6s ease-in-out infinite; }
 .animate-dash { stroke-dasharray: 12 8; animation: dash 1.5s linear infinite; }
-.animate-slide-up { animation: slide-up 0.3s ease-out; }
