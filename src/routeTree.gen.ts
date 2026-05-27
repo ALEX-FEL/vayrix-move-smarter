@@ -14,7 +14,6 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PaymentRouteImport } from './routes/payment'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as HistoryRouteImport } from './routes/history'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DriverFoundRouteImport } from './routes/driver-found'
 import { Route as CompletedRouteImport } from './routes/completed'
 import { Route as BookingRouteImport } from './routes/booking'
@@ -44,11 +43,6 @@ const HomeRoute = HomeRouteImport.update({
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DriverFoundRoute = DriverFoundRouteImport.update({
@@ -83,7 +77,6 @@ export interface FileRoutesByFullPath {
   '/booking': typeof BookingRoute
   '/completed': typeof CompletedRoute
   '/driver-found': typeof DriverFoundRoute
-  '/forgot-password': typeof ForgotPasswordRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/payment': typeof PaymentRoute
@@ -96,7 +89,6 @@ export interface FileRoutesByTo {
   '/booking': typeof BookingRoute
   '/completed': typeof CompletedRoute
   '/driver-found': typeof DriverFoundRoute
-  '/forgot-password': typeof ForgotPasswordRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/payment': typeof PaymentRoute
@@ -110,7 +102,6 @@ export interface FileRoutesById {
   '/booking': typeof BookingRoute
   '/completed': typeof CompletedRoute
   '/driver-found': typeof DriverFoundRoute
-  '/forgot-password': typeof ForgotPasswordRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/payment': typeof PaymentRoute
@@ -125,7 +116,6 @@ export interface FileRouteTypes {
     | '/booking'
     | '/completed'
     | '/driver-found'
-    | '/forgot-password'
     | '/history'
     | '/home'
     | '/payment'
@@ -138,7 +128,6 @@ export interface FileRouteTypes {
     | '/booking'
     | '/completed'
     | '/driver-found'
-    | '/forgot-password'
     | '/history'
     | '/home'
     | '/payment'
@@ -151,7 +140,6 @@ export interface FileRouteTypes {
     | '/booking'
     | '/completed'
     | '/driver-found'
-    | '/forgot-password'
     | '/history'
     | '/home'
     | '/payment'
@@ -165,7 +153,6 @@ export interface RootRouteChildren {
   BookingRoute: typeof BookingRoute
   CompletedRoute: typeof CompletedRoute
   DriverFoundRoute: typeof DriverFoundRoute
-  ForgotPasswordRoute: typeof ForgotPasswordRoute
   HistoryRoute: typeof HistoryRoute
   HomeRoute: typeof HomeRoute
   PaymentRoute: typeof PaymentRoute
@@ -208,13 +195,6 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/driver-found': {
@@ -261,7 +241,6 @@ const rootRouteChildren: RootRouteChildren = {
   BookingRoute: BookingRoute,
   CompletedRoute: CompletedRoute,
   DriverFoundRoute: DriverFoundRoute,
-  ForgotPasswordRoute: ForgotPasswordRoute,
   HistoryRoute: HistoryRoute,
   HomeRoute: HomeRoute,
   PaymentRoute: PaymentRoute,
