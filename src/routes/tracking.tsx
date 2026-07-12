@@ -3,24 +3,62 @@ import { useEffect, useState } from "react";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { StatusBar } from "@/components/StatusBar";
 import { MapBg } from "@/components/MapBg";
-import { ArrowLeft, Phone, X, Share2 } from "lucide-react";
+import { ArrowLeft, Phone, X, ShieldAlert, ShieldCheck, Radio } from "lucide-react";
+import { useSafety } from "@/providers/SafetyProvider";
+import { useRide } from "@/providers/RideProvider";
+import { rideService } from "@/services/ride.service";
+import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/tracking")({
-  head: () => ({ meta: [{ title: "Tracking — Vayrix" }] }),
+  head: () => ({ meta: [{ title: "Course en cours — Vayrix" }] }),
   component: Tracking,
 });
 
 function Tracking() {
   const navigate = useNavigate();
+  const { draft } = useRide();
+  const { active, risk, setRisk, setRecording } = useSafety();
   const [eta, setEta] = useState(180);
+  const [cancelOpen, setCancelOpen] = useState(false);
+
+  const driver = draft.driver;
+  const price = draft.finalPrice || draft.basePrice || 1500;
 
   useEffect(() => {
     const i = setInterval(() => setEta((e) => (e > 1 ? e - 1 : e)), 1000);
     return () => clearInterval(i);
   }, []);
 
+  // Safety monitoring: simulate risk analysis every ~7s
+  useEffect(() => {
+    if (!active) return;
+    setRecording(true);
+    let alive = true;
+    const tick = async () => {
+      const r = await rideService.simulateProgress();
+      if (!alive) return;
+      setRisk(r);
+      if (r === "medium") toast("Analyse IA : risque modéré", { description: "Comportement du chauffeur normal." });
+      if (r === "high") toast.error("Alerte IA : risque élevé détecté", { description: "Restez vigilant." });
+    };
+    tick();
+    const int = setInterval(tick, 7000);
+    return () => { alive = false; clearInterval(int); setRecording(false); };
+  }, [active, setRisk, setRecording]);
+
   const mm = String(Math.floor(eta / 60)).padStart(2, "0");
   const ss = String(eta % 60).padStart(2, "0");
+  const progress = Math.max(0, Math.min(100, 100 - (eta / 180) * 100));
+
+  const riskStyles = {
+    low: "bg-emerald-500/10 border-emerald-500/30 text-emerald-300",
+    medium: "bg-amber-500/10 border-amber-500/30 text-amber-300",
+    high: "bg-red-500/10 border-red-500/30 text-red-300",
+  }[risk];
 
   return (
     <PhoneFrame>
@@ -36,63 +74,94 @@ function Tracking() {
             <ArrowLeft className="h-4 w-4 text-white" />
           </button>
           <div className="px-4 py-2 rounded-2xl bg-[#141B3D]/95 backdrop-blur border border-white/10 text-center">
-            <p className="text-[10px] uppercase tracking-widest text-[#B8BED6]">Arriving in</p>
+            <p className="text-[10px] uppercase tracking-widest text-[#B8BED6]">Arrivée dans</p>
             <p className="text-lg font-bold text-gradient-primary tabular-nums">{mm}:{ss}</p>
           </div>
-          <div className="h-10 w-10" />
-
+          <button
+            onClick={() => navigate({ to: "/sos" })}
+            className="h-10 w-10 rounded-full bg-red-500 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.6)] animate-pulse"
+          >
+            <ShieldAlert className="h-4 w-4 text-white" />
+          </button>
         </div>
+
+        {/* Safety banner */}
+        {active && (
+          <div className={`absolute top-28 left-4 right-4 rounded-xl border p-3 flex items-center gap-2 backdrop-blur ${riskStyles}`}>
+            <ShieldCheck className="h-4 w-4" />
+            <div className="flex-1">
+              <p className="text-xs font-semibold">Sécurité active · Risque {risk === "low" ? "faible" : risk === "medium" ? "moyen" : "élevé"}</p>
+              <p className="text-[10px] opacity-80 flex items-center gap-1">
+                <Radio className="h-3 w-3" /> Enregistrement + analyse IA en cours
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="absolute bottom-6 left-4 right-4 rounded-2xl bg-[#141B3D]/95 backdrop-blur border border-white/10 p-5 shadow-card animate-float-up space-y-4">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center text-white font-bold shadow-glow">
-              ET
+              {driver?.initials ?? "ET"}
             </div>
             <div className="flex-1">
-              <p className="text-sm font-semibold">Eric T. is on the way</p>
-              <p className="text-xs text-[#B8BED6]">Toyota Yaris · LT 782 DJ</p>
+              <p className="text-sm font-semibold">{driver?.name ?? "Eric T."} en route</p>
+              <p className="text-xs text-[#B8BED6]">{driver?.vehicle ?? "Toyota Yaris"} · {driver?.plate ?? "LT 782 DJ"}</p>
             </div>
+            {draft.shared && (
+              <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">
+                PARTAGÉ
+              </span>
+            )}
           </div>
 
-          <div className="relative pl-5">
-            <div className="absolute left-1.5 top-1 bottom-1 w-px bg-white/15" />
-            <Row dotClass="bg-[#3B6BFF]" title="Essos, Yaoundé" subtitle="Pickup" />
-            <div className="h-3" />
-            <Row dotClass="bg-[#7B5CFF]" title="Nsimalen Airport" subtitle="Destination · 7.8 km" />
+          <div>
+            <div className="flex items-center justify-between text-xs text-[#B8BED6]">
+              <span>Progression</span>
+              <span className="tabular-nums">{price.toLocaleString()} XAF</span>
+            </div>
+            <div className="mt-2 h-1.5 rounded-full bg-white/5 overflow-hidden">
+              <div
+                className="h-full bg-gradient-primary transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
-            <ActionBtn icon={<Phone className="h-4 w-4" />} label="Call" />
-            <ActionBtn icon={<Share2 className="h-4 w-4" />} label="Share" />
-            <ActionBtn
-              icon={<X className="h-4 w-4" />}
-              label="Cancel"
-              variant="danger"
-              onClick={() => navigate({ to: "/home" })}
-            />
+            <ActionBtn icon={<Phone className="h-4 w-4" />} label="Appeler" onClick={() => toast("Appel simulé")} />
+            <ActionBtn icon={<ShieldAlert className="h-4 w-4" />} label="SOS" onClick={() => navigate({ to: "/sos" })} variant="danger" />
+            <ActionBtn icon={<X className="h-4 w-4" />} label="Annuler" onClick={() => setCancelOpen(true)} variant="danger" />
           </div>
 
           <button
             onClick={() => navigate({ to: "/payment" })}
             className="w-full h-12 rounded-xl bg-gradient-primary text-white font-semibold text-sm shadow-glow active:scale-[0.99] transition"
           >
-            I've arrived
+            Je suis arrivé
           </button>
         </div>
+
+        <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
+          <AlertDialogContent className="bg-[#141B3D] border-white/10 text-white">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Annuler la course ?</AlertDialogTitle>
+              <AlertDialogDescription className="text-[#B8BED6]">
+                Des frais d'annulation peuvent s'appliquer si le chauffeur est proche.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="bg-[#0A0E27] border-white/10 text-white">Retour</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => { toast("Course annulée"); navigate({ to: "/home" }); }}
+                className="bg-red-500 hover:bg-red-600"
+              >
+                Confirmer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </PhoneFrame>
-  );
-}
-
-function Row({ dotClass, title, subtitle }: { dotClass: string; title: string; subtitle: string }) {
-  return (
-    <div className="relative flex items-start gap-3">
-      <span className={`absolute -left-[18px] top-1.5 h-2.5 w-2.5 rounded-full ${dotClass}`} />
-      <div>
-        <p className="text-sm font-medium">{title}</p>
-        <p className="text-xs text-[#B8BED6]">{subtitle}</p>
-      </div>
-    </div>
   );
 }
 
