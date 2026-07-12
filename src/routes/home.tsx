@@ -18,18 +18,52 @@ export const Route = createFileRoute("/home")({
   component: Home,
 });
 
+function PlaceList({
+  items,
+  onSelect,
+  header,
+}: {
+  items: { icon: React.ReactNode; label: string; sub: string; badge?: React.ReactNode; place: Place }[];
+  onSelect: (p: Place) => void;
+  header?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl bg-[#1a2348] border border-white/10 overflow-hidden">
+      {header}
+      {items.map((item, i) => (
+        <button
+          key={i}
+          onMouseDown={(e) => { e.preventDefault(); onSelect(item.place); }}
+          className={`w-full flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 active:bg-white/10 text-left transition ${
+            i > 0 || header ? "border-t border-white/5" : ""
+          }`}
+        >
+          <div className="h-9 w-9 rounded-xl bg-[#0A0E27] flex items-center justify-center shrink-0">
+            {item.icon}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium truncate">{item.label}</p>
+            <p className="text-xs text-[#B8BED6] truncate">{item.sub}</p>
+          </div>
+          {item.badge}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Home() {
   const navigate = useNavigate();
   const { active, setActive } = useSafety();
   const { setDraft, draft } = useRide();
   const [recent, setRecent] = useState<AsyncState<Ride[]>>({ status: "loading" });
 
-  // Destination search state
-  const [query, setQuery] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [editingPickup, setEditingPickup] = useState(false);
+  const [destQuery, setDestQuery] = useState("");
+  const [showDestList, setShowDestList] = useState(false);
   const [pickupQuery, setPickupQuery] = useState(currentLocation.subtitle);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [showPickupList, setShowPickupList] = useState(false);
+
+  const destRef = useRef<HTMLInputElement>(null);
   const pickupRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -41,24 +75,33 @@ function Home() {
       .catch((e: Error) => setRecent({ status: "error", message: e.message }));
   }, []);
 
-  const filteredPlaces = query.length > 0
-    ? places.filter((p) =>
-        p.name.toLowerCase().includes(query.toLowerCase()) ||
-        p.subtitle.toLowerCase().includes(query.toLowerCase()),
+  const filteredDest = destQuery.length > 0
+    ? places.filter(
+        (p) =>
+          p.name.toLowerCase().includes(destQuery.toLowerCase()) ||
+          p.subtitle.toLowerCase().includes(destQuery.toLowerCase()),
+      )
+    : places;
+
+  const filteredPickup = pickupQuery.length > 0
+    ? places.filter(
+        (p) =>
+          p.name.toLowerCase().includes(pickupQuery.toLowerCase()) ||
+          p.subtitle.toLowerCase().includes(pickupQuery.toLowerCase()),
       )
     : places;
 
   const handleSelectDestination = (to: Place) => {
-    setQuery(to.name);
-    setShowDropdown(false);
+    setDestQuery(to.name);
+    setShowDestList(false);
     setDraft({ from: draft.from || currentLocation, to });
     navigate({ to: "/flow/estimate" });
   };
 
-  const handlePickupSelect = (p: Place) => {
-    setPickupQuery(p.subtitle);
+  const handleSelectPickup = (p: Place) => {
+    setPickupQuery(p === currentLocation ? currentLocation.subtitle : p.name);
     setDraft({ from: p });
-    setEditingPickup(false);
+    setShowPickupList(false);
   };
 
   const toggleSafety = () => {
@@ -68,6 +111,33 @@ function Home() {
       description: next ? "Enregistrement audio et analyse IA prêts." : "",
     });
   };
+
+  const pickupListItems = [
+    {
+      icon: <Navigation className="h-4 w-4 text-[#3B6BFF]" />,
+      label: "Position actuelle",
+      sub: currentLocation.subtitle,
+      badge: (
+        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 shrink-0">
+          GPS
+        </span>
+      ),
+      place: currentLocation,
+    },
+    ...filteredPickup.slice(0, 4).map((p) => ({
+      icon: <MapPin className="h-4 w-4 text-[#B8BED6]" />,
+      label: p.name,
+      sub: p.subtitle,
+      place: p,
+    })),
+  ];
+
+  const destListItems = filteredDest.slice(0, 5).map((p) => ({
+    icon: <MapPin className="h-4 w-4 text-[#7B5CFF]" />,
+    label: p.name,
+    sub: p.subtitle,
+    place: p,
+  }));
 
   return (
     <AppShell>
@@ -93,117 +163,78 @@ function Home() {
         <section className="rounded-2xl bg-[#141B3D] border border-white/5 p-4 shadow-card animate-float-up [animation-delay:40ms]">
           <h2 className="text-xs uppercase tracking-widest text-[#B8BED6] mb-3">Où allez-vous ?</h2>
 
-          <div className="relative space-y-2">
-            {/* Pickup row */}
-            <div className="flex items-center gap-3 h-12 px-3 rounded-xl bg-[#0A0E27] group">
+          <div className="space-y-2">
+            {/* ── Pickup field ── */}
+            <div
+              className={`flex items-center gap-3 h-12 px-3 rounded-xl bg-[#0A0E27] border transition ${
+                showPickupList ? "border-[#3B6BFF]/60" : "border-transparent"
+              }`}
+            >
               <div className="h-2.5 w-2.5 rounded-full bg-[#3B6BFF] shadow-[0_0_10px_#3B6BFF] shrink-0" />
-              {editingPickup ? (
-                <>
-                  <input
-                    ref={pickupRef}
-                    value={pickupQuery}
-                    onChange={(e) => setPickupQuery(e.target.value)}
-                    onBlur={() => setEditingPickup(false)}
-                    className="flex-1 bg-transparent outline-none text-sm"
-                    autoFocus
-                  />
-                  <button onClick={() => setEditingPickup(false)}>
-                    <X className="h-3.5 w-3.5 text-[#B8BED6]" />
-                  </button>
-                </>
+              <input
+                ref={pickupRef}
+                value={pickupQuery}
+                onChange={(e) => { setPickupQuery(e.target.value); setShowPickupList(true); }}
+                onFocus={() => setShowPickupList(true)}
+                onBlur={() => setTimeout(() => setShowPickupList(false), 150)}
+                className="flex-1 bg-transparent outline-none text-sm placeholder:text-white/40 truncate"
+                placeholder="Point de départ"
+              />
+              {showPickupList ? (
+                <button onMouseDown={(e) => { e.preventDefault(); setShowPickupList(false); }}>
+                  <X className="h-3.5 w-3.5 text-[#B8BED6]" />
+                </button>
               ) : (
-                <button
-                  className="flex-1 flex items-center justify-between text-left"
-                  onClick={() => setEditingPickup(true)}
-                >
-                  <span className="text-sm text-white truncate">{pickupQuery}</span>
-                  <ChevronDown className="h-3.5 w-3.5 text-[#B8BED6] shrink-0" />
-                </button>
+                <ChevronDown className="h-3.5 w-3.5 text-[#B8BED6] shrink-0" />
               )}
             </div>
 
-            {/* Connector dot */}
-            <div className="absolute left-[18px] top-[44px] h-3 w-px bg-white/15" />
+            {/* Pickup list — inline in flow */}
+            {showPickupList && (
+              <PlaceList items={pickupListItems} onSelect={handleSelectPickup} />
+            )}
 
-            {/* Destination row */}
-            <div className="relative">
-              <div className="flex items-center gap-3 h-12 px-3 rounded-xl bg-[#0A0E27] focus-within:border focus-within:border-[#7B5CFF]/60">
-                <Search className="h-4 w-4 text-[#B8BED6] shrink-0" />
-                <input
-                  ref={inputRef}
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                    setShowDropdown(true);
-                  }}
-                  onFocus={() => setShowDropdown(true)}
-                  onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-                  placeholder="Entrez votre destination"
-                  className="flex-1 bg-transparent outline-none text-sm placeholder:text-white/40"
-                />
-                {query.length > 0 && (
-                  <button onClick={() => { setQuery(""); inputRef.current?.focus(); }}>
-                    <X className="h-3.5 w-3.5 text-[#B8BED6]" />
-                  </button>
-                )}
+            {/* Connector line — only visible when no list open */}
+            {!showPickupList && !showDestList && (
+              <div className="flex items-center gap-3 px-3 h-3">
+                <div className="flex justify-center w-[10px]">
+                  <div className="w-px h-3 bg-white/15" />
+                </div>
               </div>
+            )}
 
-              {/* Dropdown */}
-              {showDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-2xl bg-[#1a2348] border border-white/10 shadow-card overflow-hidden">
-                  {filteredPlaces.slice(0, 5).map((p) => (
-                    <button
-                      key={p.id}
-                      onMouseDown={() => handleSelectDestination(p)}
-                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 text-left transition"
-                    >
-                      <MapPin className="h-4 w-4 text-[#7B5CFF] shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium">{p.name}</p>
-                        <p className="text-xs text-[#B8BED6]">{p.subtitle}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+            {/* ── Destination field ── */}
+            <div
+              className={`flex items-center gap-3 h-12 px-3 rounded-xl bg-[#0A0E27] border transition ${
+                showDestList ? "border-[#7B5CFF]/60" : "border-transparent"
+              }`}
+            >
+              <Search className="h-4 w-4 text-[#B8BED6] shrink-0" />
+              <input
+                ref={destRef}
+                value={destQuery}
+                onChange={(e) => { setDestQuery(e.target.value); setShowDestList(true); }}
+                onFocus={() => setShowDestList(true)}
+                onBlur={() => setTimeout(() => setShowDestList(false), 150)}
+                placeholder="Entrez votre destination"
+                className="flex-1 bg-transparent outline-none text-sm placeholder:text-white/40"
+              />
+              {destQuery.length > 0 && (
+                <button onMouseDown={(e) => { e.preventDefault(); setDestQuery(""); destRef.current?.focus(); }}>
+                  <X className="h-3.5 w-3.5 text-[#B8BED6]" />
+                </button>
               )}
             </div>
-          </div>
 
-          {/* Pickup quick-edit dropdown */}
-          {editingPickup && (
-            <div className="mt-2 rounded-2xl bg-[#1a2348] border border-white/10 overflow-hidden">
-              <button
-                onMouseDown={() => handlePickupSelect(currentLocation)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 text-left transition"
-              >
-                <Navigation className="h-4 w-4 text-[#3B6BFF] shrink-0" />
-                <div>
-                  <p className="text-sm font-medium">Position actuelle</p>
-                  <p className="text-xs text-[#B8BED6]">{currentLocation.subtitle}</p>
-                </div>
-                <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">GPS</span>
-              </button>
-              {places.slice(0, 3).map((p) => (
-                <button
-                  key={p.id}
-                  onMouseDown={() => handlePickupSelect(p)}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 text-left transition border-t border-white/5"
-                >
-                  <MapPin className="h-4 w-4 text-[#B8BED6] shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium">{p.name}</p>
-                    <p className="text-xs text-[#B8BED6]">{p.subtitle}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
+            {/* Destination list — inline in flow */}
+            {showDestList && (
+              <PlaceList items={destListItems} onSelect={handleSelectDestination} />
+            )}
+          </div>
 
           <div className="mt-3 grid grid-cols-2 gap-2">
             <button
-              onClick={() => {
-                if (!query) { inputRef.current?.focus(); setShowDropdown(true); return; }
-              }}
+              onClick={() => { destRef.current?.focus(); setShowDestList(true); }}
               className="h-12 rounded-xl bg-gradient-primary text-white font-semibold text-sm shadow-glow flex items-center justify-center gap-2 active:scale-[0.99]"
             >
               Commander <ArrowRight className="h-4 w-4" />
