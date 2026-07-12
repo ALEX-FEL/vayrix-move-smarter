@@ -19,6 +19,10 @@ import { Route as CompletedRouteImport } from './routes/completed'
 import { Route as BookingRouteImport } from './routes/booking'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FlowPickupRouteImport } from './routes/flow.pickup'
+import { Route as FlowNegotiateRouteImport } from './routes/flow.negotiate'
+import { Route as FlowEstimateRouteImport } from './routes/flow.estimate'
+import { Route as FlowDestinationRouteImport } from './routes/flow.destination'
 
 const TrackingRoute = TrackingRouteImport.update({
   id: '/tracking',
@@ -70,6 +74,26 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FlowPickupRoute = FlowPickupRouteImport.update({
+  id: '/flow/pickup',
+  path: '/flow/pickup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlowNegotiateRoute = FlowNegotiateRouteImport.update({
+  id: '/flow/negotiate',
+  path: '/flow/negotiate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlowEstimateRoute = FlowEstimateRouteImport.update({
+  id: '/flow/estimate',
+  path: '/flow/estimate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlowDestinationRoute = FlowDestinationRouteImport.update({
+  id: '/flow/destination',
+  path: '/flow/destination',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +106,10 @@ export interface FileRoutesByFullPath {
   '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRoute
   '/tracking': typeof TrackingRoute
+  '/flow/destination': typeof FlowDestinationRoute
+  '/flow/estimate': typeof FlowEstimateRoute
+  '/flow/negotiate': typeof FlowNegotiateRoute
+  '/flow/pickup': typeof FlowPickupRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +122,10 @@ export interface FileRoutesByTo {
   '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRoute
   '/tracking': typeof TrackingRoute
+  '/flow/destination': typeof FlowDestinationRoute
+  '/flow/estimate': typeof FlowEstimateRoute
+  '/flow/negotiate': typeof FlowNegotiateRoute
+  '/flow/pickup': typeof FlowPickupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +139,10 @@ export interface FileRoutesById {
   '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRoute
   '/tracking': typeof TrackingRoute
+  '/flow/destination': typeof FlowDestinationRoute
+  '/flow/estimate': typeof FlowEstimateRoute
+  '/flow/negotiate': typeof FlowNegotiateRoute
+  '/flow/pickup': typeof FlowPickupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +157,10 @@ export interface FileRouteTypes {
     | '/payment'
     | '/profile'
     | '/tracking'
+    | '/flow/destination'
+    | '/flow/estimate'
+    | '/flow/negotiate'
+    | '/flow/pickup'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +173,10 @@ export interface FileRouteTypes {
     | '/payment'
     | '/profile'
     | '/tracking'
+    | '/flow/destination'
+    | '/flow/estimate'
+    | '/flow/negotiate'
+    | '/flow/pickup'
   id:
     | '__root__'
     | '/'
@@ -145,6 +189,10 @@ export interface FileRouteTypes {
     | '/payment'
     | '/profile'
     | '/tracking'
+    | '/flow/destination'
+    | '/flow/estimate'
+    | '/flow/negotiate'
+    | '/flow/pickup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +206,10 @@ export interface RootRouteChildren {
   PaymentRoute: typeof PaymentRoute
   ProfileRoute: typeof ProfileRoute
   TrackingRoute: typeof TrackingRoute
+  FlowDestinationRoute: typeof FlowDestinationRoute
+  FlowEstimateRoute: typeof FlowEstimateRoute
+  FlowNegotiateRoute: typeof FlowNegotiateRoute
+  FlowPickupRoute: typeof FlowPickupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +284,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/flow/pickup': {
+      id: '/flow/pickup'
+      path: '/flow/pickup'
+      fullPath: '/flow/pickup'
+      preLoaderRoute: typeof FlowPickupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flow/negotiate': {
+      id: '/flow/negotiate'
+      path: '/flow/negotiate'
+      fullPath: '/flow/negotiate'
+      preLoaderRoute: typeof FlowNegotiateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flow/estimate': {
+      id: '/flow/estimate'
+      path: '/flow/estimate'
+      fullPath: '/flow/estimate'
+      preLoaderRoute: typeof FlowEstimateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flow/destination': {
+      id: '/flow/destination'
+      path: '/flow/destination'
+      fullPath: '/flow/destination'
+      preLoaderRoute: typeof FlowDestinationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -246,6 +326,10 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentRoute: PaymentRoute,
   ProfileRoute: ProfileRoute,
   TrackingRoute: TrackingRoute,
+  FlowDestinationRoute: FlowDestinationRoute,
+  FlowEstimateRoute: FlowEstimateRoute,
+  FlowNegotiateRoute: FlowNegotiateRoute,
+  FlowPickupRoute: FlowPickupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
