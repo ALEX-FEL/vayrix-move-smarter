@@ -277,31 +277,6 @@ function Home() {
           </div>
         </section>
 
-        
-
-        {/* Quick destinations */}
-        <section className="space-y-3 animate-float-up [animation-delay:120ms]">
-          <h3 className="text-sm font-semibold">Destinations rapides</h3>
-          <div className="space-y-2">
-            {places.slice(0, 3).map((s) => (
-              <button
-                key={s.id}
-                onClick={() => handleSelectDestination(s)}
-                className="w-full flex items-center gap-3 p-3 rounded-2xl bg-[#141B3D] border border-white/5 hover:border-[#7B5CFF]/40 transition text-left"
-              >
-                <div className="h-10 w-10 rounded-xl bg-[#0A0E27] flex items-center justify-center">
-                  <MapPin className="h-4 w-4 text-[#7B5CFF]" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{s.name}</p>
-                  <p className="text-xs text-[#B8BED6]">{s.subtitle}</p>
-                </div>
-                <ArrowRight className="h-4 w-4 text-[#B8BED6]" />
-              </button>
-            ))}
-          </div>
-        </section>
-
         {/* Recent history */}
         <section className="space-y-3 animate-float-up [animation-delay:180ms]">
           <div className="flex items-center justify-between">
