@@ -2,11 +2,10 @@ import { ReactNode } from "react";
 import { PhoneFrame } from "./PhoneFrame";
 import { StatusBar } from "./StatusBar";
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Clock, User, MapPin } from "lucide-react";
+import { Home, Clock, User } from "lucide-react";
 
 const tabs = [
   { to: "/home", icon: Home, label: "Home" },
-  { to: "/booking", icon: MapPin, label: "Ride" },
   { to: "/history", icon: Clock, label: "Trips" },
   { to: "/profile", icon: User, label: "Me" },
 ] as const;
