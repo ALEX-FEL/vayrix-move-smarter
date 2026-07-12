@@ -159,6 +159,35 @@ function Home() {
           </button>
         </header>
 
+        {/* Safety toggle */}
+        <button
+          onClick={toggleSafety}
+          className={`w-full flex items-center gap-3 p-3.5 rounded-2xl border transition text-left animate-float-up [animation-delay:80ms] ${
+            active
+              ? "bg-emerald-500/10 border-emerald-500/30"
+              : "bg-[#141B3D] border-white/5"
+          }`}
+        >
+          <div
+            className={`h-10 w-10 rounded-xl flex items-center justify-center ${
+              active ? "bg-emerald-500/20 text-emerald-300" : "bg-[#0A0E27] text-[#7B5CFF]"
+            }`}
+          >
+            <ShieldCheck className="h-4 w-4" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold">Mode sécurité</p>
+            <p className="text-xs text-[#B8BED6]">
+              {active
+                ? "Actif — protection continue pendant la course"
+                : "Inactif — activez avant ou pendant la course"}
+            </p>
+          </div>
+          <div className={`h-6 w-11 rounded-full p-0.5 transition ${active ? "bg-emerald-500" : "bg-white/10"}`}>
+            <div className={`h-5 w-5 rounded-full bg-white transition ${active ? "translate-x-5" : ""}`} />
+          </div>
+        </button>
+
         {/* Main booking card */}
         <section className="rounded-2xl bg-[#141B3D] border border-white/5 p-4 shadow-card animate-float-up [animation-delay:40ms]">
           <h2 className="text-xs uppercase tracking-widest text-[#B8BED6] mb-3">Où allez-vous ?</h2>
@@ -248,34 +277,7 @@ function Home() {
           </div>
         </section>
 
-        {/* Safety toggle */}
-        <button
-          onClick={toggleSafety}
-          className={`w-full flex items-center gap-3 p-3.5 rounded-2xl border transition text-left animate-float-up [animation-delay:80ms] ${
-            active
-              ? "bg-emerald-500/10 border-emerald-500/30"
-              : "bg-[#141B3D] border-white/5"
-          }`}
-        >
-          <div
-            className={`h-10 w-10 rounded-xl flex items-center justify-center ${
-              active ? "bg-emerald-500/20 text-emerald-300" : "bg-[#0A0E27] text-[#7B5CFF]"
-            }`}
-          >
-            <ShieldCheck className="h-4 w-4" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold">Mode sécurité</p>
-            <p className="text-xs text-[#B8BED6]">
-              {active
-                ? "Actif — protection continue pendant la course"
-                : "Inactif — activez avant ou pendant la course"}
-            </p>
-          </div>
-          <div className={`h-6 w-11 rounded-full p-0.5 transition ${active ? "bg-emerald-500" : "bg-white/10"}`}>
-            <div className={`h-5 w-5 rounded-full bg-white transition ${active ? "translate-x-5" : ""}`} />
-          </div>
-        </button>
+        
 
         {/* Quick destinations */}
         <section className="space-y-3 animate-float-up [animation-delay:120ms]">
