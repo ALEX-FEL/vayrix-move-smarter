@@ -140,6 +140,7 @@ function Home() {
   }));
 
   return (
+    <AppShell>
       <div className="px-5 pt-2 pb-6 space-y-5">
         {/* Header */}
         <header className="flex items-center justify-between animate-float-up">
