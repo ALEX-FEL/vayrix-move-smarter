@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackingRouteImport } from './routes/tracking'
+import { Route as SosRouteImport } from './routes/sos'
+import { Route as SharedRouteImport } from './routes/shared'
+import { Route as RatingRouteImport } from './routes/rating'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PaymentRouteImport } from './routes/payment'
 import { Route as HomeRouteImport } from './routes/home'
@@ -19,10 +22,32 @@ import { Route as CompletedRouteImport } from './routes/completed'
 import { Route as BookingRouteImport } from './routes/booking'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SharedIdRouteImport } from './routes/shared.$id'
+import { Route as ProfileEmergencyRouteImport } from './routes/profile.emergency'
+import { Route as ProfileEditRouteImport } from './routes/profile.edit'
+import { Route as FlowPickupRouteImport } from './routes/flow.pickup'
+import { Route as FlowNegotiateRouteImport } from './routes/flow.negotiate'
+import { Route as FlowEstimateRouteImport } from './routes/flow.estimate'
+import { Route as FlowDestinationRouteImport } from './routes/flow.destination'
 
 const TrackingRoute = TrackingRouteImport.update({
   id: '/tracking',
   path: '/tracking',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SosRoute = SosRouteImport.update({
+  id: '/sos',
+  path: '/sos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SharedRoute = SharedRouteImport.update({
+  id: '/shared',
+  path: '/shared',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RatingRoute = RatingRouteImport.update({
+  id: '/rating',
+  path: '/rating',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -70,6 +95,41 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SharedIdRoute = SharedIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => SharedRoute,
+} as any)
+const ProfileEmergencyRoute = ProfileEmergencyRouteImport.update({
+  id: '/emergency',
+  path: '/emergency',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileEditRoute = ProfileEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const FlowPickupRoute = FlowPickupRouteImport.update({
+  id: '/flow/pickup',
+  path: '/flow/pickup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlowNegotiateRoute = FlowNegotiateRouteImport.update({
+  id: '/flow/negotiate',
+  path: '/flow/negotiate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlowEstimateRoute = FlowEstimateRouteImport.update({
+  id: '/flow/estimate',
+  path: '/flow/estimate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlowDestinationRoute = FlowDestinationRouteImport.update({
+  id: '/flow/destination',
+  path: '/flow/destination',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,8 +140,18 @@ export interface FileRoutesByFullPath {
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/payment': typeof PaymentRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
+  '/rating': typeof RatingRoute
+  '/shared': typeof SharedRouteWithChildren
+  '/sos': typeof SosRoute
   '/tracking': typeof TrackingRoute
+  '/flow/destination': typeof FlowDestinationRoute
+  '/flow/estimate': typeof FlowEstimateRoute
+  '/flow/negotiate': typeof FlowNegotiateRoute
+  '/flow/pickup': typeof FlowPickupRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/emergency': typeof ProfileEmergencyRoute
+  '/shared/$id': typeof SharedIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -92,8 +162,18 @@ export interface FileRoutesByTo {
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/payment': typeof PaymentRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
+  '/rating': typeof RatingRoute
+  '/shared': typeof SharedRouteWithChildren
+  '/sos': typeof SosRoute
   '/tracking': typeof TrackingRoute
+  '/flow/destination': typeof FlowDestinationRoute
+  '/flow/estimate': typeof FlowEstimateRoute
+  '/flow/negotiate': typeof FlowNegotiateRoute
+  '/flow/pickup': typeof FlowPickupRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/emergency': typeof ProfileEmergencyRoute
+  '/shared/$id': typeof SharedIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -105,8 +185,18 @@ export interface FileRoutesById {
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/payment': typeof PaymentRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
+  '/rating': typeof RatingRoute
+  '/shared': typeof SharedRouteWithChildren
+  '/sos': typeof SosRoute
   '/tracking': typeof TrackingRoute
+  '/flow/destination': typeof FlowDestinationRoute
+  '/flow/estimate': typeof FlowEstimateRoute
+  '/flow/negotiate': typeof FlowNegotiateRoute
+  '/flow/pickup': typeof FlowPickupRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/emergency': typeof ProfileEmergencyRoute
+  '/shared/$id': typeof SharedIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,7 +210,17 @@ export interface FileRouteTypes {
     | '/home'
     | '/payment'
     | '/profile'
+    | '/rating'
+    | '/shared'
+    | '/sos'
     | '/tracking'
+    | '/flow/destination'
+    | '/flow/estimate'
+    | '/flow/negotiate'
+    | '/flow/pickup'
+    | '/profile/edit'
+    | '/profile/emergency'
+    | '/shared/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -132,7 +232,17 @@ export interface FileRouteTypes {
     | '/home'
     | '/payment'
     | '/profile'
+    | '/rating'
+    | '/shared'
+    | '/sos'
     | '/tracking'
+    | '/flow/destination'
+    | '/flow/estimate'
+    | '/flow/negotiate'
+    | '/flow/pickup'
+    | '/profile/edit'
+    | '/profile/emergency'
+    | '/shared/$id'
   id:
     | '__root__'
     | '/'
@@ -144,7 +254,17 @@ export interface FileRouteTypes {
     | '/home'
     | '/payment'
     | '/profile'
+    | '/rating'
+    | '/shared'
+    | '/sos'
     | '/tracking'
+    | '/flow/destination'
+    | '/flow/estimate'
+    | '/flow/negotiate'
+    | '/flow/pickup'
+    | '/profile/edit'
+    | '/profile/emergency'
+    | '/shared/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -156,8 +276,15 @@ export interface RootRouteChildren {
   HistoryRoute: typeof HistoryRoute
   HomeRoute: typeof HomeRoute
   PaymentRoute: typeof PaymentRoute
-  ProfileRoute: typeof ProfileRoute
+  ProfileRoute: typeof ProfileRouteWithChildren
+  RatingRoute: typeof RatingRoute
+  SharedRoute: typeof SharedRouteWithChildren
+  SosRoute: typeof SosRoute
   TrackingRoute: typeof TrackingRoute
+  FlowDestinationRoute: typeof FlowDestinationRoute
+  FlowEstimateRoute: typeof FlowEstimateRoute
+  FlowNegotiateRoute: typeof FlowNegotiateRoute
+  FlowPickupRoute: typeof FlowPickupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -167,6 +294,27 @@ declare module '@tanstack/react-router' {
       path: '/tracking'
       fullPath: '/tracking'
       preLoaderRoute: typeof TrackingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sos': {
+      id: '/sos'
+      path: '/sos'
+      fullPath: '/sos'
+      preLoaderRoute: typeof SosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shared': {
+      id: '/shared'
+      path: '/shared'
+      fullPath: '/shared'
+      preLoaderRoute: typeof SharedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rating': {
+      id: '/rating'
+      path: '/rating'
+      fullPath: '/rating'
+      preLoaderRoute: typeof RatingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -232,8 +380,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shared/$id': {
+      id: '/shared/$id'
+      path: '/$id'
+      fullPath: '/shared/$id'
+      preLoaderRoute: typeof SharedIdRouteImport
+      parentRoute: typeof SharedRoute
+    }
+    '/profile/emergency': {
+      id: '/profile/emergency'
+      path: '/emergency'
+      fullPath: '/profile/emergency'
+      preLoaderRoute: typeof ProfileEmergencyRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/edit': {
+      id: '/profile/edit'
+      path: '/edit'
+      fullPath: '/profile/edit'
+      preLoaderRoute: typeof ProfileEditRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/flow/pickup': {
+      id: '/flow/pickup'
+      path: '/flow/pickup'
+      fullPath: '/flow/pickup'
+      preLoaderRoute: typeof FlowPickupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flow/negotiate': {
+      id: '/flow/negotiate'
+      path: '/flow/negotiate'
+      fullPath: '/flow/negotiate'
+      preLoaderRoute: typeof FlowNegotiateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flow/estimate': {
+      id: '/flow/estimate'
+      path: '/flow/estimate'
+      fullPath: '/flow/estimate'
+      preLoaderRoute: typeof FlowEstimateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flow/destination': {
+      id: '/flow/destination'
+      path: '/flow/destination'
+      fullPath: '/flow/destination'
+      preLoaderRoute: typeof FlowDestinationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface ProfileRouteChildren {
+  ProfileEditRoute: typeof ProfileEditRoute
+  ProfileEmergencyRoute: typeof ProfileEmergencyRoute
+}
+
+const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfileEditRoute: ProfileEditRoute,
+  ProfileEmergencyRoute: ProfileEmergencyRoute,
+}
+
+const ProfileRouteWithChildren =
+  ProfileRoute._addFileChildren(ProfileRouteChildren)
+
+interface SharedRouteChildren {
+  SharedIdRoute: typeof SharedIdRoute
+}
+
+const SharedRouteChildren: SharedRouteChildren = {
+  SharedIdRoute: SharedIdRoute,
+}
+
+const SharedRouteWithChildren =
+  SharedRoute._addFileChildren(SharedRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -244,19 +465,16 @@ const rootRouteChildren: RootRouteChildren = {
   HistoryRoute: HistoryRoute,
   HomeRoute: HomeRoute,
   PaymentRoute: PaymentRoute,
-  ProfileRoute: ProfileRoute,
+  ProfileRoute: ProfileRouteWithChildren,
+  RatingRoute: RatingRoute,
+  SharedRoute: SharedRouteWithChildren,
+  SosRoute: SosRoute,
   TrackingRoute: TrackingRoute,
+  FlowDestinationRoute: FlowDestinationRoute,
+  FlowEstimateRoute: FlowEstimateRoute,
+  FlowNegotiateRoute: FlowNegotiateRoute,
+  FlowPickupRoute: FlowPickupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
