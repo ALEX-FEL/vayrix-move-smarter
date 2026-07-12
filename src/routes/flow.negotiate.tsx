@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/flow/negotiate")({
   head: () => ({ meta: [{ title: "Négociation — Vayrix" }] }),
-  component: Negotiate;
+  component: Negotiate,
 });
 
 function Negotiate() {
