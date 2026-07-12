@@ -281,9 +281,6 @@ function Home() {
         <section className="space-y-3 animate-float-up [animation-delay:180ms]">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold">Trajets récents</h3>
-            <Link to="/history" className="text-xs text-[#B8BED6]">
-              Voir tout
-            </Link>
           </div>
           <QueryView state={recent} emptyLabel="Pas encore de trajet">
             {(list) => (
@@ -315,19 +312,6 @@ function Home() {
           </QueryView>
         </section>
 
-        <button
-          onClick={() => navigate({ to: "/profile" })}
-          className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-[#141B3D] border border-white/5 text-left"
-        >
-          <div className="h-10 w-10 rounded-xl bg-[#0A0E27] flex items-center justify-center text-[#7B5CFF]">
-            <UserIcon className="h-4 w-4" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold">Mon profil</p>
-            <p className="text-xs text-[#B8BED6]">Contacts d'urgence, préférences</p>
-          </div>
-          <ArrowRight className="h-4 w-4 text-[#B8BED6]" />
-        </button>
       </div>
     </AppShell>
   );
