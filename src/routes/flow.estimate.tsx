@@ -27,7 +27,7 @@ function Estimate() {
     setState({ status: "loading" });
     try {
       if (!draft.to) {
-        navigate({ to: "/flow/destination" });
+        navigate({ to: "/home" });
         return;
       }
       const fare = await rideService.estimateFare(draft.from, draft.to);
@@ -52,14 +52,18 @@ function Estimate() {
         <StatusBar />
         <div className="px-5 py-4 flex items-center gap-3">
           <button
-            onClick={() => navigate({ to: "/flow/destination" })}
+            onClick={() => navigate({ to: "/home" })}
             className="h-10 w-10 rounded-full bg-[#141B3D] border border-white/10 flex items-center justify-center"
           >
             <ArrowLeft className="h-4 w-4 text-white" />
           </button>
           <div>
-            <p className="text-[10px] uppercase tracking-widest text-[#B8BED6]">Étape 3 / 3</p>
             <h1 className="text-lg font-semibold">Choix du véhicule</h1>
+            {draft.to && (
+              <p className="text-xs text-[#B8BED6] truncate max-w-[220px]">
+                {draft.from.name} → {draft.to.name}
+              </p>
+            )}
           </div>
         </div>
 
