@@ -7,8 +7,12 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { Toaster } from "@/components/ui/sonner";
+import { RideProvider } from "@/providers/RideProvider";
+import { SafetyProvider } from "@/providers/SafetyProvider";
 
 import appCss from "../styles.css?url";
+
 
 function NotFoundComponent() {
   return (
@@ -113,7 +117,13 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <RideProvider>
+        <SafetyProvider>
+          <Outlet />
+          <Toaster />
+        </SafetyProvider>
+      </RideProvider>
     </QueryClientProvider>
   );
 }
+
