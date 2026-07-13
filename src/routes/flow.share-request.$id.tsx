@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { StatusBar } from "@/components/StatusBar";
-import { ArrowLeft, Check, X, Loader2, Car, ShieldCheck, MapPin, Clock, TrendingDown, User as UserIcon } from "lucide-react";
+import { ArrowLeft, Check, X, Loader2, Car, ShieldCheck, MapPin, Clock, TrendingDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { sharedService, type CompatibilityCheck, type ShareRequest } from "@/services/shared.service";
 import type { AsyncState, SharedRide } from "@/models";
