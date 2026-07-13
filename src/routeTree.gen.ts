@@ -29,6 +29,7 @@ import { Route as FlowPickupRouteImport } from './routes/flow.pickup'
 import { Route as FlowNegotiateRouteImport } from './routes/flow.negotiate'
 import { Route as FlowEstimateRouteImport } from './routes/flow.estimate'
 import { Route as FlowDestinationRouteImport } from './routes/flow.destination'
+import { Route as FlowShareRequestIdRouteImport } from './routes/flow.share-request.$id'
 
 const TrackingRoute = TrackingRouteImport.update({
   id: '/tracking',
@@ -130,6 +131,11 @@ const FlowDestinationRoute = FlowDestinationRouteImport.update({
   path: '/flow/destination',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FlowShareRequestIdRoute = FlowShareRequestIdRouteImport.update({
+  id: '/flow/share-request/$id',
+  path: '/flow/share-request/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/profile/edit': typeof ProfileEditRoute
   '/profile/emergency': typeof ProfileEmergencyRoute
   '/shared/$id': typeof SharedIdRoute
+  '/flow/share-request/$id': typeof FlowShareRequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/profile/edit': typeof ProfileEditRoute
   '/profile/emergency': typeof ProfileEmergencyRoute
   '/shared/$id': typeof SharedIdRoute
+  '/flow/share-request/$id': typeof FlowShareRequestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/profile/edit': typeof ProfileEditRoute
   '/profile/emergency': typeof ProfileEmergencyRoute
   '/shared/$id': typeof SharedIdRoute
+  '/flow/share-request/$id': typeof FlowShareRequestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/profile/edit'
     | '/profile/emergency'
     | '/shared/$id'
+    | '/flow/share-request/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/profile/edit'
     | '/profile/emergency'
     | '/shared/$id'
+    | '/flow/share-request/$id'
   id:
     | '__root__'
     | '/'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/profile/edit'
     | '/profile/emergency'
     | '/shared/$id'
+    | '/flow/share-request/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -285,6 +297,7 @@ export interface RootRouteChildren {
   FlowEstimateRoute: typeof FlowEstimateRoute
   FlowNegotiateRoute: typeof FlowNegotiateRoute
   FlowPickupRoute: typeof FlowPickupRoute
+  FlowShareRequestIdRoute: typeof FlowShareRequestIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -429,6 +442,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FlowDestinationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/flow/share-request/$id': {
+      id: '/flow/share-request/$id'
+      path: '/flow/share-request/$id'
+      fullPath: '/flow/share-request/$id'
+      preLoaderRoute: typeof FlowShareRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -474,17 +494,8 @@ const rootRouteChildren: RootRouteChildren = {
   FlowEstimateRoute: FlowEstimateRoute,
   FlowNegotiateRoute: FlowNegotiateRoute,
   FlowPickupRoute: FlowPickupRoute,
+  FlowShareRequestIdRoute: FlowShareRequestIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
