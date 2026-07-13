@@ -21,9 +21,9 @@ function SharedList() {
   // Guard: user must have set pickup + destination first.
   useEffect(() => {
     if (!draft.from || !draft.to) {
-      throw redirect({ to: "/home" });
+      navigate({ to: "/home" });
     }
-  }, [draft.from, draft.to]);
+  }, [draft.from, draft.to, navigate]);
 
   const load = async () => {
     setState({ status: "loading" });
