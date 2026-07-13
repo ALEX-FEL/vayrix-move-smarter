@@ -269,17 +269,7 @@ function Home() {
               Commander <ArrowRight className="h-4 w-4" />
             </button>
             <button
-              onClick={() => {
-                if (!draft.to) {
-                  toast("Sélectionnez d'abord votre destination", {
-                    description: "Le partage requiert un point de départ et une destination.",
-                  });
-                  destRef.current?.focus();
-                  setShowDestList(true);
-                  return;
-                }
-                navigate({ to: "/shared" });
-              }}
+              onClick={() => navigate({ to: "/shared" })}
               className="h-12 rounded-xl bg-[#0A0E27] border border-white/10 text-white font-semibold text-sm flex items-center justify-center gap-2"
             >
               <Users className="h-4 w-4" /> Partager

@@ -1,12 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { StatusBar } from "@/components/StatusBar";
-import { ArrowLeft, Users, TrendingDown, Car, Clock, Navigation } from "lucide-react";
+import { ArrowLeft, Users, TrendingDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { sharedService } from "@/services/shared.service";
 import type { AsyncState, SharedRide } from "@/models";
 import { QueryView } from "@/components/QueryView";
-import { useRide } from "@/providers/RideProvider";
 
 export const Route = createFileRoute("/shared")({
   head: () => ({ meta: [{ title: "Partage de course — Vayrix" }] }),
@@ -15,15 +14,7 @@ export const Route = createFileRoute("/shared")({
 
 function SharedList() {
   const navigate = useNavigate();
-  const { draft } = useRide();
   const [state, setState] = useState<AsyncState<SharedRide[]>>({ status: "loading" });
-
-  // Guard: user must have set pickup + destination first.
-  useEffect(() => {
-    if (!draft.from || !draft.to) {
-      navigate({ to: "/home" });
-    }
-  }, [draft.from, draft.to, navigate]);
 
   const load = async () => {
     setState({ status: "loading" });
@@ -37,91 +28,57 @@ function SharedList() {
 
   useEffect(() => { load(); }, []);
 
-  const openDetail = (r: SharedRide) => {
-    navigate({
-      to: "/flow/share-request/$id",
-      params: { id: r.id },
-      search: {
-        adresse_depart: draft.from?.name,
-        latitude_depart: draft.from?.lat,
-        longitude_depart: draft.from?.lng,
-        adresse_arrivee: draft.to?.name,
-        latitude_arrivee: draft.to?.lat,
-        longitude_arrivee: draft.to?.lng,
-      },
-    });
-  };
-
   return (
     <PhoneFrame>
-      <div className="flex flex-col min-h-screen sm:min-h-[860px] overflow-x-hidden">
+      <div className="flex flex-col h-full min-h-screen sm:min-h-[860px]">
         <StatusBar />
-        <div className="px-4 sm:px-5 py-4 flex items-center gap-3">
+        <div className="px-5 py-4 flex items-center gap-3">
           <button
             onClick={() => navigate({ to: "/home" })}
-            className="h-10 w-10 shrink-0 rounded-full bg-[#141B3D] border border-white/10 flex items-center justify-center"
+            className="h-10 w-10 rounded-full bg-[#141B3D] border border-white/10 flex items-center justify-center"
           >
             <ArrowLeft className="h-4 w-4 text-white" />
           </button>
-          <div className="min-w-0">
-            <h1 className="text-lg font-semibold truncate">Courses compatibles</h1>
-            <p className="text-xs text-[#B8BED6] truncate">
-              {draft.from?.name} → {draft.to?.name}
-            </p>
+          <div>
+            <h1 className="text-lg font-semibold">Courses partagées</h1>
+            <p className="text-xs text-[#B8BED6]">Rejoignez une course et économisez</p>
           </div>
         </div>
 
-        <div className="px-4 sm:px-5 flex-1 pb-5">
-          <QueryView state={state} onRetry={load} emptyLabel="Aucune course disponible dans votre zone">
+        <div className="px-5 flex-1">
+          <QueryView state={state} onRetry={load} emptyLabel="Aucune course compatible pour le moment">
             {(rides) => (
               <div className="space-y-2">
                 {rides.map((r) => (
                   <button
                     key={r.id}
-                    onClick={() => openDetail(r)}
+                    onClick={() => navigate({ to: "/shared/$id", params: { id: r.id } })}
                     className="w-full text-left p-4 rounded-2xl bg-[#141B3D] border border-white/5 hover:border-[#7B5CFF]/40 transition space-y-3"
                   >
-                    <div className="flex items-center justify-between gap-2 min-w-0">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="h-10 w-10 shrink-0 rounded-full bg-gradient-primary flex items-center justify-center text-white text-xs font-bold">
-                          {r.driver.initials}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="h-9 w-9 rounded-full bg-gradient-primary flex items-center justify-center text-white text-xs font-bold">
+                          {r.requester.initials}
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold truncate">{r.driver.name}</p>
-                          <p className="text-[11px] text-[#B8BED6] truncate flex items-center gap-1">
-                            <Car className="h-3 w-3 shrink-0" /> {r.driver.vehicle}
-                          </p>
+                        <div>
+                          <p className="text-sm font-semibold">{r.requester.name}</p>
+                          <p className="text-[10px] text-[#B8BED6]">Note {r.requester.rating}</p>
                         </div>
                       </div>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center gap-1 shrink-0">
-                        <TrendingDown className="h-3 w-3" /> -{r.savings.toLocaleString()} FCFA
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center gap-1">
+                        <TrendingDown className="h-3 w-3" /> -{r.savings} XAF
                       </span>
                     </div>
-                    <div className="text-xs space-y-1">
-                      <p className="flex items-start gap-2 min-w-0">
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#3B6BFF] shrink-0" />
-                        <span className="truncate">{r.from.name}</span>
-                      </p>
-                      <p className="flex items-start gap-2 min-w-0">
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#7B5CFF] shrink-0" />
-                        <span className="truncate">{r.to.name}</span>
-                      </p>
+                    <div>
+                      <p className="text-sm">{r.from.name} → {r.to.name}</p>
+                      <p className="text-[11px] text-[#B8BED6]">{r.departureAt}</p>
                     </div>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#B8BED6]">
-                      <span className="flex items-center gap-1">
-                        <Navigation className="h-3 w-3" /> à {r.distanceFromUserKm} km
+                    <div className="flex items-center justify-between pt-1 border-t border-white/5">
+                      <span className="text-[11px] text-[#B8BED6] flex items-center gap-1">
+                        <Users className="h-3 w-3" /> {r.seatsLeft} places
                       </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" /> ~{r.pickupEtaMin} min
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Users className="h-3 w-3" /> {r.seatsLeft} place{r.seatsLeft > 1 ? "s" : ""}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                      <span className="text-[11px] text-[#B8BED6]">Prix partage</span>
                       <p className="text-base font-bold tabular-nums">
-                        {r.proposedPrice.toLocaleString()} <span className="text-[10px] text-[#B8BED6] font-normal">FCFA</span>
+                        {r.proposedPrice.toLocaleString()} <span className="text-[10px] text-[#B8BED6] font-normal">XAF</span>
                       </p>
                     </div>
                   </button>

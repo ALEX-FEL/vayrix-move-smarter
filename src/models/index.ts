@@ -72,20 +72,6 @@ export type PaymentResult = {
 
 export type RiskLevel = "low" | "medium" | "high";
 
-export type SharedRideStatus = "active" | "started" | "completed" | "cancelled";
-
-export type ShareRequestStatus =
-  | "EN_ATTENTE_CHAUFFEUR"
-  | "EN_ATTENTE_CLIENT_INITIAL"
-  | "PARTAGEE"
-  | "REFUSEE";
-
-export type InitialClient = {
-  name: string;
-  initials: string;
-  alreadyDroppedOff: boolean;
-};
-
 export type SharedRide = {
   id: string;
   from: Place;
@@ -94,18 +80,7 @@ export type SharedRide = {
   originalPrice: number;
   savings: number;
   departureAt: string;
-  pickupEtaMin: number;
   seatsLeft: number;
-  distanceFromUserKm: number;
-  addedDistanceKm: number;
-  addedDurationMin: number;
-  vehicle: VehicleType;
-  driver: Driver;
-  status: SharedRideStatus;
-  sharingAllowed: boolean;
-  initialClient?: InitialClient;
-  newTotalPrice: number;
-  initialClientNewPrice: number;
   requester: { name: string; initials: string; rating: number };
 };
 

@@ -57,10 +57,10 @@ function Completed() {
 
         <div className="p-5 space-y-2">
           <button
-            onClick={() => { reset(); navigate({ to: "/history" }); }}
+            onClick={() => navigate({ to: "/rating" })}
             className="w-full h-12 rounded-xl bg-gradient-primary text-white font-semibold text-sm shadow-glow"
           >
-            Voir l'historique
+            Évaluer le chauffeur
           </button>
           <button
             onClick={() => { reset(); navigate({ to: "/home" }); }}
