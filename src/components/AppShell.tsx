@@ -5,9 +5,9 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { Home, Clock, User } from "lucide-react";
 
 const tabs = [
-  { to: "/home", icon: Home, label: "Home" },
-  { to: "/history", icon: Clock, label: "Trips" },
-  { to: "/profile", icon: User, label: "Me" },
+  { to: "/home", icon: Home, label: "" },
+  { to: "/history", icon: Clock, label: "" },
+  { to: "/profile", icon: User, label: "" },
 ] as const;
 
 export function AppShell({
@@ -20,35 +20,74 @@ export function AppShell({
   hideStatus?: boolean;
 }) {
   const { pathname } = useLocation();
+
   return (
     <PhoneFrame>
-      <div className="flex flex-col h-full min-h-screen sm:min-h-[860px] sm:h-[860px]">
+      <div className="relative flex h-full flex-col overflow-hidden">
+
         {!hideStatus && <StatusBar />}
-        <div className="flex-1 overflow-y-auto pb-24">{children}</div>
+
+        <div
+          className="flex-1 min-h-0 overflow-y-auto overscroll-contain"
+          style={{
+            paddingBottom: hideNav
+              ? "1rem"
+              : "calc(96px + env(safe-area-inset-bottom, 0px))",
+          }}
+        >
+          {children}
+        </div>
+
         {!hideNav && (
-          <nav className="absolute bottom-0 left-0 right-0 px-4 pb-4 pt-2 bg-gradient-to-t from-[#0A0E27] via-[#0A0E27]/95 to-transparent">
-            <div className="mx-auto bg-[#141B3D]/95 backdrop-blur border border-white/5 rounded-2xl px-2 py-2 flex items-center justify-around shadow-card">
+          <nav className="absolute bottom-5 left-1/2 -translate-x-1/2 w-[88%] max-w-sm z-30">
+            <div
+              className="
+                relative
+                flex
+                items-center
+                justify-around
+                h-[66px]
+                px-3
+                rounded-[26px]
+                bg-[#111832]/90
+                backdrop-blur-2xl
+                border border-white/10
+                shadow-[0_10px_40px_-8px_rgba(0,0,0,0.55)]
+                overflow-hidden
+              "
+            >
               {tabs.map((t) => {
                 const active = pathname === t.to;
                 const Icon = t.icon;
+
                 return (
                   <Link
                     key={t.to}
                     to={t.to}
-                    className="flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all"
+                    className="relative flex flex-col items-center justify-center gap-1 flex-1 min-w-0 h-full"
                   >
                     <div
-                      className={`p-1.5 rounded-lg transition-all ${
-                        active ? "bg-gradient-primary shadow-glow" : ""
-                      }`}
+                      className={`
+                        flex items-center justify-center shrink-0 w-9 h-9 rounded-full border
+                        transition-all duration-300 ease-out
+                        ${
+                          active
+                            ? "bg-gradient-primary border-white/70 -translate-y-[3px] shadow-[0_4px_14px_-2px_rgba(99,102,241,0.5)]"
+                            : "bg-transparent border-white/20 translate-y-0"
+                        }
+                      `}
                     >
                       <Icon
-                        className={`h-5 w-5 ${active ? "text-white" : "text-[#B8BED6]"}`}
+                        strokeWidth={active ? 2.4 : 1.8}
+                        className={`w-[18px] h-[18px] shrink-0 transition-all duration-300 ${
+                          active ? "text-white scale-100" : "text-[#AAB2D5] scale-95"
+                        }`}
                       />
                     </div>
+
                     <span
-                      className={`text-[10px] font-medium ${
-                        active ? "text-white" : "text-[#B8BED6]"
+                      className={`text-[10px] font-medium tracking-wide leading-none whitespace-nowrap transition-all duration-300 ${
+                        active ? "text-white opacity-100" : "text-[#AAB2D5] opacity-70"
                       }`}
                     >
                       {t.label}
@@ -59,6 +98,7 @@ export function AppShell({
             </div>
           </nav>
         )}
+
       </div>
     </PhoneFrame>
   );
