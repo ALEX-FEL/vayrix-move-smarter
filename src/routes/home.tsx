@@ -132,14 +132,11 @@ function Home() {
       <div className="px-5 pt-2 pb-6 space-y-5">
         {/* Header — VAYRIX wordmark instead of profile */}
         <header className="flex items-center justify-between animate-float-up">
-          <div className="flex items-center gap-2.5">
-            <div className="relative h-9 w-9 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow shrink-0">
-              <Navigation className="h-4 w-4 text-white rotate-45" strokeWidth={2.5} />
-              <span className="absolute inset-0 rounded-xl bg-gradient-primary blur-md opacity-50 -z-10" />
-            </div>
-            <span className="text-[22px] font-black tracking-tight bg-gradient-to-r from-white via-[#d8cbff] to-[#7B5CFF] bg-clip-text text-transparent">
+          <div className="flex flex-col gap-1">
+            <span className="text-[24px] font-black tracking-[-0.02em] leading-none bg-gradient-to-r from-white via-[#c8b8ff] to-[#7B5CFF] bg-clip-text text-transparent">
               VAYRIX
             </span>
+            <span className="h-[3px] w-8 rounded-full bg-gradient-primary shadow-[0_0_8px_rgba(123,92,255,0.6)]" />
           </div>
 
           <button
