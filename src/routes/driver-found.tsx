@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { StatusBar } from "@/components/StatusBar";
-import { MapBg } from "@/components/MapBg";
+import { MapView } from "@/components/MapView";
 import { ArrowLeft, Star, Phone } from "lucide-react";
 import { useRide } from "@/providers/RideProvider";
 import { toast } from "sonner";
@@ -23,7 +23,10 @@ function DriverFound() {
   return (
     <PhoneFrame>
       <div className="relative h-full min-h-screen sm:min-h-[860px]">
-        <MapBg withCar />
+        <MapView
+          origin={{ lat: draft.from.lat, lng: draft.from.lng }}
+          destination={draft.to ? { lat: draft.to.lat, lng: draft.to.lng } : undefined}
+        />
         <StatusBar />
 
         <div className="absolute top-12 left-4 right-4 flex items-center justify-between">
