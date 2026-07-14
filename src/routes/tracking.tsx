@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { StatusBar } from "@/components/StatusBar";
-import { MapBg } from "@/components/MapBg";
+import { MapView } from "@/components/MapView";
 import { ArrowLeft, Phone, X, ShieldAlert, ShieldCheck, Radio } from "lucide-react";
 import { useSafety } from "@/providers/SafetyProvider";
 import { useRide } from "@/providers/RideProvider";
@@ -63,7 +63,10 @@ function Tracking() {
   return (
     <PhoneFrame>
       <div className="relative h-full min-h-screen sm:min-h-[860px]">
-        <MapBg withCar />
+        <MapView
+          origin={{ lat: draft.from.lat, lng: draft.from.lng }}
+          destination={draft.to ? { lat: draft.to.lat, lng: draft.to.lng } : undefined}
+        />
         <StatusBar />
 
         <div className="absolute top-12 left-4 right-4 flex items-center justify-between">
