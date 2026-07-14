@@ -15,6 +15,7 @@ import { Route as SharedRouteImport } from './routes/shared'
 import { Route as RatingRouteImport } from './routes/rating'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PaymentRouteImport } from './routes/payment'
+import { Route as OptionRouteImport } from './routes/option'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as DriverFoundRouteImport } from './routes/driver-found'
@@ -58,6 +59,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const PaymentRoute = PaymentRouteImport.update({
   id: '/payment',
   path: '/payment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OptionRoute = OptionRouteImport.update({
+  id: '/option',
+  path: '/option',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/driver-found': typeof DriverFoundRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/option': typeof OptionRoute
   '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRouteWithChildren
   '/rating': typeof RatingRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/driver-found': typeof DriverFoundRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/option': typeof OptionRoute
   '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRouteWithChildren
   '/rating': typeof RatingRoute
@@ -184,6 +192,7 @@ export interface FileRoutesById {
   '/driver-found': typeof DriverFoundRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/option': typeof OptionRoute
   '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRouteWithChildren
   '/rating': typeof RatingRoute
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
     | '/driver-found'
     | '/history'
     | '/home'
+    | '/option'
     | '/payment'
     | '/profile'
     | '/rating'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/driver-found'
     | '/history'
     | '/home'
+    | '/option'
     | '/payment'
     | '/profile'
     | '/rating'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/driver-found'
     | '/history'
     | '/home'
+    | '/option'
     | '/payment'
     | '/profile'
     | '/rating'
@@ -275,6 +287,7 @@ export interface RootRouteChildren {
   DriverFoundRoute: typeof DriverFoundRoute
   HistoryRoute: typeof HistoryRoute
   HomeRoute: typeof HomeRoute
+  OptionRoute: typeof OptionRoute
   PaymentRoute: typeof PaymentRoute
   ProfileRoute: typeof ProfileRouteWithChildren
   RatingRoute: typeof RatingRoute
@@ -329,6 +342,13 @@ declare module '@tanstack/react-router' {
       path: '/payment'
       fullPath: '/payment'
       preLoaderRoute: typeof PaymentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/option': {
+      id: '/option'
+      path: '/option'
+      fullPath: '/option'
+      preLoaderRoute: typeof OptionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -464,6 +484,7 @@ const rootRouteChildren: RootRouteChildren = {
   DriverFoundRoute: DriverFoundRoute,
   HistoryRoute: HistoryRoute,
   HomeRoute: HomeRoute,
+  OptionRoute: OptionRoute,
   PaymentRoute: PaymentRoute,
   ProfileRoute: ProfileRouteWithChildren,
   RatingRoute: RatingRoute,
