@@ -22,7 +22,6 @@ const VEHICLE_TYPES = [
   { id: "moto" as const, label: "Moto", image: "https://images.unsplash.com/photo-1558980664-10ea9f223d1e?w=300&q=80&auto=format&fit=crop" },
   { id: "classic" as const, label: "Classique", image: "https://images.unsplash.com/photo-1550355191-aa8a80b41353?w=300&q=80&auto=format&fit=crop" },
   { id: "premium" as const, label: "Premium", image: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=300&q=80&auto=format&fit=crop" },
-  { id: "van" as const, label: "Van", image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=300&q=80&auto=format&fit=crop" },
 ];
 
 // ── Publicités — contenu + images externes, propres au contexte Vayrix/Cameroun ──
