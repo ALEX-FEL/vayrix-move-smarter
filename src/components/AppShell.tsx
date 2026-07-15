@@ -28,7 +28,7 @@ export function AppShell({
         {!hideStatus && <StatusBar />}
 
         <div
-          className="flex-1 min-h-0 overflow-y-auto overscroll-contain"
+          className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden overscroll-contain"
           style={{
             paddingBottom: hideNav
               ? "1rem"
