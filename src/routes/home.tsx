@@ -149,7 +149,7 @@ function Home() {
 
   return (
     <AppShell>
-      <div className="px-5 pt-2 pb-6 space-y-5">
+      <div className="px-5 pt-2 pb-6 space-y-5 w-full overflow-x-hidden">
         {/* Header — menu (options/profil) · notifications, logo légèrement en dessous */}
         <header className="relative animate-float-up">
           <div className="flex items-center justify-between">
@@ -176,8 +176,11 @@ function Home() {
           </div>
 
           {/* Logo centré, légèrement en retrait sous les boutons + arc décoratif */}
-          <div className="flex flex-col items-center -mt-1">
-            <span className="text-[22px] font-black tracking-[-0.02em] leading-none bg-gradient-to-r from-white via-[#c8b8ff] to-[#7B5CFF] bg-clip-text text-transparent">
+          <div className="flex flex-col items-center mt-1">
+            <span
+              className="text-[22px] font-black tracking-[-0.02em] leading-none bg-gradient-to-r from-white via-[#c8b8ff] to-[#7B5CFF] bg-clip-text text-transparent"
+              style={{ WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+            >
               VAYRIX
             </span>
             <svg viewBox="0 0 200 24" className="w-28 h-4 mt-1" preserveAspectRatio="none">
@@ -202,8 +205,8 @@ function Home() {
         {/* Carrousel manuel — choix du type de véhicule, directement sur l'accueil */}
         <section className="animate-float-up [animation-delay:20ms]">
           <div
-            className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing"
-            style={{ scrollbarWidth: "none" }}
+            className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain"
+            style={{ scrollbarWidth: "none", touchAction: "pan-x" }}
           >
             {VEHICLE_TYPES.map((v) => {
               const active = selectedVehicle === v.id;
@@ -234,7 +237,7 @@ function Home() {
         <section className="rounded-2xl bg-[#141B3D] border border-white/5 p-4 shadow-card animate-float-up [animation-delay:40ms]">
           <h2 className="text-center text-sm font-semibold tracking-wide mb-3">Course</h2>
 
-          <div className="relative">
+          <div>
             <div
               className={`flex items-center gap-3 h-12 px-3 rounded-xl bg-[#0A0E27] border transition ${
                 showDestList ? "border-[#7B5CFF]/60" : "border-transparent"
@@ -257,8 +260,10 @@ function Home() {
               )}
             </div>
 
+            {/* En flux normal (plus en position absolute) : la liste pousse les
+                éléments suivants vers le bas au lieu de les recouvrir. */}
             {showDestList && (
-              <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-20">
+              <div className="mt-2">
                 <PlaceList items={destListItems} onSelect={handleSelectDestination} />
               </div>
             )}
@@ -336,8 +341,8 @@ function Home() {
           <div
             ref={adScrollRef}
             onScroll={handleAdsScroll}
-            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing"
-            style={{ scrollbarWidth: "none" }}
+            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain"
+            style={{ scrollbarWidth: "none", touchAction: "pan-x" }}
           >
             {ADS.map((ad, i) => (
               <div
