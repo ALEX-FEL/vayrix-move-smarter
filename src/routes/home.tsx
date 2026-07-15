@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import {
-  MapPin, ArrowRight, Users, Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-  X, Menu, Bell, Bike, Car, Sparkles, Clock,
+  MapPin, ArrowRight, Users, Search, ChevronDown, ChevronUp,
+  X, Menu, Bell, Clock,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRide } from "@/providers/RideProvider";
@@ -16,29 +16,14 @@ export const Route = createFileRoute("/home")({
 });
 
 // ── Types de véhicule — carrousel manuel affiché directement sur l'accueil ──
-// (photos illustratives en attendant les vraies images produit)
+// (photos placeholder génériques en attendant les vraies photos des véhicules)
+// Toutes les cartes partagent exactement les mêmes dimensions, pas d'icône ni de description.
 const VEHICLE_TYPES = [
-  {
-    id: "moto" as const,
-    label: "Moto",
-    desc: "Rapide & économique",
-    icon: Bike,
-    image: "https://images.unsplash.com/photo-1558980664-10ea9f223d1e?w=300&q=80&auto=format&fit=crop",
-  },
-  {
-    id: "classic" as const,
-    label: "Classique",
-    desc: "Confort standard",
-    icon: Car,
-    image: "https://images.unsplash.com/photo-1550355191-aa8a80b41353?w=300&q=80&auto=format&fit=crop",
-  },
-  {
-    id: "premium" as const,
-    label: "Premium",
-    desc: "Berline haut de gamme",
-    icon: Sparkles,
-    image: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=300&q=80&auto=format&fit=crop",
-  },
+  { id: "moto" as const, label: "Moto", image: "https://images.unsplash.com/photo-1558980664-10ea9f223d1e?w=300&q=80&auto=format&fit=crop" },
+  { id: "classic" as const, label: "Classique", image: "https://images.unsplash.com/photo-1550355191-aa8a80b41353?w=300&q=80&auto=format&fit=crop" },
+  { id: "premium" as const, label: "Premium", image: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=300&q=80&auto=format&fit=crop" },
+  { id: "van" as const, label: "Van", image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=300&q=80&auto=format&fit=crop" },
+  { id: "livraison" as const, label: "Livraison", image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=300&q=80&auto=format&fit=crop" },
 ];
 
 // ── Publicités — contenu + images externes, propres au contexte Vayrix/Cameroun ──
@@ -115,6 +100,15 @@ function Home() {
   const [adIndex, setAdIndex] = useState(0);
   const adScrollRef = useRef<HTMLDivElement>(null);
 
+  // Suit la position du scroll natif pour mettre à jour les points d'indicateur
+  // (les flèches de navigation ont été retirées, seul le swipe manuel reste).
+  const handleAdsScroll = () => {
+    const el = adScrollRef.current;
+    if (!el) return;
+    const cardWidth = el.scrollWidth / ADS.length;
+    setAdIndex(Math.round(el.scrollLeft / cardWidth));
+  };
+
   const [destQuery, setDestQuery] = useState("");
   const [showDestList, setShowDestList] = useState(false);
 
@@ -152,14 +146,6 @@ function Home() {
     sub: p.subtitle,
     place: p,
   }));
-
-  const scrollAdsBy = (dir: 1 | -1) => {
-    const el = adScrollRef.current;
-    if (!el) return;
-    const cardWidth = el.clientWidth * 0.86;
-    el.scrollBy({ left: dir * cardWidth, behavior: "smooth" });
-    setAdIndex((i) => Math.min(ADS.length - 1, Math.max(0, i + dir)));
-  };
 
   return (
     <AppShell>
@@ -216,30 +202,28 @@ function Home() {
         {/* Carrousel manuel — choix du type de véhicule, directement sur l'accueil */}
         <section className="animate-float-up [animation-delay:20ms]">
           <div
-            className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none"
+            className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing"
             style={{ scrollbarWidth: "none" }}
           >
             {VEHICLE_TYPES.map((v) => {
-              const Icon = v.icon;
               const active = selectedVehicle === v.id;
               return (
                 <button
                   key={v.id}
                   onClick={() => setSelectedVehicle(v.id)}
-                  className={`snap-start shrink-0 w-[128px] rounded-2xl border overflow-hidden text-left transition ${
+                  className={`snap-start shrink-0 w-[100px] h-[92px] rounded-2xl border overflow-hidden text-left transition select-none ${
                     active ? "border-[#7B5CFF]/70 shadow-glow bg-[#1a2348]" : "border-white/5 bg-[#141B3D]"
                   }`}
                 >
-                  <div className="h-16 w-full relative">
-                    <img src={v.image} alt={v.label} className="h-full w-full object-cover" />
-                    <div className="absolute top-1.5 left-1.5 h-6 w-6 rounded-full bg-[#0A0E27]/80 backdrop-blur flex items-center justify-center">
-                      <Icon className="h-3.5 w-3.5 text-[#7B5CFF]" />
-                    </div>
-                  </div>
-                  <div className="p-2">
-                    <p className="text-xs font-semibold">{v.label}</p>
-                    <p className="text-[10px] text-[#B8BED6] truncate">{v.desc}</p>
-                  </div>
+                  <img
+                    src={v.image}
+                    alt={v.label}
+                    draggable={false}
+                    className="h-[60px] w-full object-cover"
+                  />
+                  <p className="h-8 flex items-center justify-center text-xs font-semibold px-1 truncate">
+                    {v.label}
+                  </p>
                 </button>
               );
             })}
@@ -345,51 +329,41 @@ function Home() {
           )}
         </section>
 
-        {/* Publicité défilante — carrousel navigable */}
+        {/* Publicité — format compact, texte disposé directement sur l'image, sans flèches */}
         <section className="animate-float-up [animation-delay:80ms]">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs uppercase tracking-widest text-[#B8BED6]">Publicité</h3>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => scrollAdsBy(-1)}
-                aria-label="Publicité précédente"
-                className="h-6 w-6 rounded-full bg-[#141B3D] border border-white/10 flex items-center justify-center"
-              >
-                <ChevronLeft className="h-3 w-3 text-[#B8BED6]" />
-              </button>
-              <button
-                onClick={() => scrollAdsBy(1)}
-                aria-label="Publicité suivante"
-                className="h-6 w-6 rounded-full bg-[#141B3D] border border-white/10 flex items-center justify-center"
-              >
-                <ChevronRight className="h-3 w-3 text-[#B8BED6]" />
-              </button>
-            </div>
-          </div>
+          <h3 className="text-xs uppercase tracking-widest text-[#B8BED6] mb-2">Publicité</h3>
 
           <div
             ref={adScrollRef}
-            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none"
+            onScroll={handleAdsScroll}
+            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing"
             style={{ scrollbarWidth: "none" }}
           >
             {ADS.map((ad, i) => (
               <div
                 key={i}
-                className="snap-start shrink-0 w-[86%] rounded-2xl bg-[#141B3D] border border-white/5 overflow-hidden"
+                className="relative snap-start shrink-0 w-[210px] h-[100px] rounded-2xl overflow-hidden border border-white/5"
               >
-                <div className="h-28 w-full">
-                  <img src={ad.image} alt={ad.title} className="h-full w-full object-cover" />
+                <img
+                  src={ad.image}
+                  alt={ad.title}
+                  draggable={false}
+                  className="absolute inset-0 h-full w-full object-cover select-none"
+                />
+                {/* Dégradé pour garder le texte lisible, sans déborder du cadre */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-2.5">
+                  <p className="text-xs font-semibold text-white leading-tight truncate">{ad.title}</p>
+                  <p className="mt-0.5 text-[10px] text-white/80 leading-snug line-clamp-2">{ad.subtitle}</p>
                 </div>
-                <div className="p-3.5">
-                  <p className="text-sm font-semibold">{ad.title}</p>
-                  <p className="mt-1 text-xs text-[#B8BED6] leading-relaxed">{ad.subtitle}</p>
-                  <button className="mt-2 text-xs font-semibold text-[#7B5CFF]">{ad.cta} →</button>
-                </div>
+                <span className="absolute top-1.5 right-1.5 text-[9px] font-semibold text-white bg-white/15 backdrop-blur px-1.5 py-0.5 rounded-full">
+                  {ad.cta}
+                </span>
               </div>
             ))}
           </div>
 
-          {/* Indicateurs */}
+          {/* Indicateurs — suivent le scroll manuel */}
           <div className="mt-2 flex items-center justify-center gap-1.5">
             {ADS.map((_, i) => (
               <span
@@ -401,6 +375,14 @@ function Home() {
             ))}
           </div>
         </section>
+
+        {/*
+          Espace réservé pour que la barre de navigation flottante (gérée par AppShell,
+          non fournie) puisse se superposer en position fixed/sticky par-dessus la zone
+          publicité sans en masquer le contenu utile. Ajuste pb-* selon la hauteur réelle
+          de la nav une fois AppShell.tsx partagé.
+        */}
+        <div className="h-20" />
       </div>
     </AppShell>
   );
