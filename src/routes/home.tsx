@@ -115,14 +115,16 @@ function Home() {
     if (!el) return;
 
     const firstChild = el.children[0] as HTMLElement | undefined;
-    const cardWidth = (firstChild?.getBoundingClientRect().width ?? 100) + 12;
+    if (!firstChild) return;
+
+    const cardWidth = firstChild.getBoundingClientRect().width + 12;
     const targetDisplayIndex = VEHICLE_TYPES.length + index;
     const child = el.children[targetDisplayIndex] as HTMLElement | undefined;
 
     if (!child) return;
 
     const left = Math.max(0, child.offsetLeft - (el.clientWidth - child.clientWidth) / 2);
-    el.scrollTo({ left: left + cardWidth * 0.2, behavior });
+    el.scrollTo({ left, behavior });
   };
 
   useEffect(() => {
@@ -134,16 +136,20 @@ function Home() {
     if (!el) return;
 
     const firstChild = el.children[0] as HTMLElement | undefined;
-    const cardWidth = (firstChild?.getBoundingClientRect().width ?? 100) + 12;
-    const groupWidth = cardWidth * VEHICLE_TYPES.length;
-    const threshold = Math.max(80, groupWidth * 0.35);
+    if (!firstChild) return;
 
-    if (el.scrollLeft < threshold) {
+    const step = firstChild.getBoundingClientRect().width + 12;
+    const groupWidth = step * VEHICLE_TYPES.length;
+    const threshold = Math.max(60, step * 0.6);
+    const isNearStart = el.scrollLeft < threshold;
+    const isNearEnd = el.scrollLeft + el.clientWidth > el.scrollWidth - threshold;
+
+    if (isNearStart) {
       el.scrollTo({ left: el.scrollLeft + groupWidth, behavior: "auto" });
       return;
     }
 
-    if (el.scrollLeft + el.clientWidth > el.scrollWidth - threshold) {
+    if (isNearEnd) {
       el.scrollTo({ left: el.scrollLeft - groupWidth, behavior: "auto" });
       return;
     }
@@ -491,9 +497,9 @@ function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
                 <div className="absolute inset-x-0 bottom-0 p-3">
-                  <p className="text-sm font-semibold text-white leading-tight line-clamp-2">{ad.title}</p>
-                  <p className="mt-2 text-[15px] text-white/80 leading-snug line-clamp-2">{ad.subtitle}</p>
-                  <span className="mt-2 inline-flex items-center justify-center rounded-full bg-white/90 px-3.5 py-2 text-[11px] font-semibold text-[#0A0E27] shadow-lg backdrop-blur transition group-hover:bg-white group-active:scale-[0.98]">
+                  <p className="text-[11px] font-semibold text-white leading-tight line-clamp-2">{ad.title}</p>
+                  <p className="mt-1.5 text-[10px] text-white/80 leading-snug line-clamp-2">{ad.subtitle}</p>
+                  <span className="mt-2 inline-flex items-center justify-center rounded-full bg-white/90 px-2.5 py-1.5 text-[10px] font-semibold text-[#0A0E27] shadow-lg backdrop-blur transition group-hover:bg-white group-active:scale-[0.98]">
                     {ad.cta}
                   </span>
                 </div>
