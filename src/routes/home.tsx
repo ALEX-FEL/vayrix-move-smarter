@@ -108,10 +108,46 @@ function Home() {
   const [vehicleIndex, setVehicleIndex] = useState(() =>
     Math.max(0, VEHICLE_TYPES.findIndex((v) => v.id === selectedVehicle)),
   );
+  const carouselItems = [...VEHICLE_TYPES, ...VEHICLE_TYPES, ...VEHICLE_TYPES];
+
+  const centerVehicle = (index: number, behavior: ScrollBehavior = "smooth") => {
+    const el = vehicleScrollRef.current;
+    if (!el) return;
+
+    const firstChild = el.children[0] as HTMLElement | undefined;
+    const cardWidth = (firstChild?.getBoundingClientRect().width ?? 100) + 12;
+    const targetDisplayIndex = VEHICLE_TYPES.length + index;
+    const child = el.children[targetDisplayIndex] as HTMLElement | undefined;
+
+    if (!child) return;
+
+    const left = Math.max(0, child.offsetLeft - (el.clientWidth - child.clientWidth) / 2);
+    el.scrollTo({ left: left + cardWidth * 0.2, behavior });
+  };
+
+  useEffect(() => {
+    centerVehicle(vehicleIndex, "auto");
+  }, [vehicleIndex]);
 
   const handleVehicleScroll = () => {
     const el = vehicleScrollRef.current;
     if (!el) return;
+
+    const firstChild = el.children[0] as HTMLElement | undefined;
+    const cardWidth = (firstChild?.getBoundingClientRect().width ?? 100) + 12;
+    const groupWidth = cardWidth * VEHICLE_TYPES.length;
+    const threshold = Math.max(80, groupWidth * 0.35);
+
+    if (el.scrollLeft < threshold) {
+      el.scrollTo({ left: el.scrollLeft + groupWidth, behavior: "auto" });
+      return;
+    }
+
+    if (el.scrollLeft + el.clientWidth > el.scrollWidth - threshold) {
+      el.scrollTo({ left: el.scrollLeft - groupWidth, behavior: "auto" });
+      return;
+    }
+
     const center = el.scrollLeft + el.clientWidth / 2;
     let closestIdx = 0;
     let closestDist = Infinity;
@@ -125,34 +161,61 @@ function Home() {
       }
     });
 
-    if (closestIdx !== vehicleIndex) {
-      setVehicleIndex(closestIdx);
-      const id = VEHICLE_TYPES[closestIdx]?.id;
-      if (id) setSelectedVehicle(id);
+    const nextRealIndex = closestIdx % VEHICLE_TYPES.length;
+    const id = VEHICLE_TYPES[nextRealIndex]?.id;
+    if (id && id !== selectedVehicle) {
+      setSelectedVehicle(id);
+      setVehicleIndex(nextRealIndex);
     }
   };
 
   const handleVehicleSelect = (id: typeof VEHICLE_TYPES[number]["id"], index: number) => {
     setSelectedVehicle(id);
     setVehicleIndex(index);
-    const el = vehicleScrollRef.current;
-    const child = el?.children[index] as HTMLElement | undefined;
-    if (el && child) {
-      child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-    }
+    centerVehicle(index, "smooth");
   };
   const [showRecent, setShowRecent] = useState(false);
   const [adIndex, setAdIndex] = useState(0);
   const adScrollRef = useRef<HTMLDivElement>(null);
+  const adIndexRef = useRef(0);
+  const adItems = [...ADS, ...ADS];
+  const activeAdIndex = adIndex % ADS.length;
 
   // Suit la position du scroll natif pour mettre à jour les points d'indicateur
   // (les flèches de navigation ont été retirées, seul le swipe manuel reste).
   const handleAdsScroll = () => {
     const el = adScrollRef.current;
     if (!el) return;
-    const cardWidth = el.scrollWidth / ADS.length;
-    setAdIndex(Math.round(el.scrollLeft / cardWidth));
+    const cardWidth = el.scrollWidth / adItems.length;
+    const nextIndex = Math.round(el.scrollLeft / cardWidth);
+    adIndexRef.current = nextIndex;
+    setAdIndex(nextIndex);
   };
+
+  useEffect(() => {
+    const el = adScrollRef.current;
+    if (!el) return;
+
+    const interval = window.setInterval(() => {
+      const firstChild = el.children[0] as HTMLElement | undefined;
+      const cardWidth = firstChild?.getBoundingClientRect().width ?? 230;
+      adIndexRef.current = (adIndexRef.current + 1) % adItems.length;
+      setAdIndex(adIndexRef.current);
+
+      const targetLeft = adIndexRef.current * cardWidth;
+      el.scrollTo({ left: targetLeft, behavior: "smooth" });
+
+      if (adIndexRef.current === ADS.length) {
+        window.setTimeout(() => {
+          el.scrollTo({ left: 0, behavior: "auto" });
+          adIndexRef.current = 0;
+          setAdIndex(0);
+        }, 350);
+      }
+    }, 4000);
+
+    return () => window.clearInterval(interval);
+  }, [adItems.length]);
 
   const [destQuery, setDestQuery] = useState("");
   const [showDestList, setShowDestList] = useState(false);
@@ -254,8 +317,10 @@ function Home() {
             className="flex gap-3 overflow-x-auto px-1 py-3 snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain scroll-smooth"
             style={{ scrollbarWidth: "none", touchAction: "pan-x", scrollPadding: "0 1rem" }}
           >
-            {VEHICLE_TYPES.map((v, i) => {
-              const active = vehicleIndex === i;
+            {carouselItems.map((v, i) => {
+              const realIndex = i % VEHICLE_TYPES.length;
+              const item = VEHICLE_TYPES[realIndex];
+              const active = vehicleIndex === realIndex;
               return (
                 // <button
                 //   key={v.id}
@@ -275,8 +340,8 @@ function Home() {
                 //   </p> */}
                 // </button>
                 <button
-                  key={v.id}
-                  onClick={() => handleVehicleSelect(v.id, i)}
+                  key={`${item.id}-${i}`}
+                  onClick={() => handleVehicleSelect(item.id, realIndex)}
                   className={`snap-start shrink-0 w-[100px] rounded-2xl border overflow-hidden text-left transform-gpu transition-all duration-300 will-change-transform select-none ${
                     active
                       ? "border-[#7B5CFF]/80 bg-[#1a2348] scale-110 -translate-y-2 z-20 shadow-[0_14px_30px_-10px_rgba(123,92,255,0.6)] ring-2 ring-[#7B5CFF]/40"
@@ -285,8 +350,8 @@ function Home() {
                 >
                   <div className="aspect-[3/2] w-full overflow-hidden">
                     <img
-                      src={v.image}
-                      alt={v.label}
+                      src={item.image}
+                      alt={item.label}
                       draggable={false}
                       className="h-full w-full object-cover"
                     />
@@ -410,9 +475,9 @@ function Home() {
             className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain pb-1"
             style={{ scrollbarWidth: "none", touchAction: "pan-x" }}
           >
-            {ADS.map((ad, i) => (
+            {adItems.map((ad, i) => (
               <a
-                key={i}
+                key={`${ad.title}-${i}`}
                 href={ad.link}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -442,7 +507,7 @@ function Home() {
               <span
                 key={i}
                 className={`h-1.5 rounded-full transition-all ${
-                  i === adIndex ? "w-4 bg-[#7B5CFF]" : "w-1.5 bg-white/15"
+                  i === activeAdIndex ? "w-4 bg-[#7B5CFF]" : "w-1.5 bg-white/15"
                 }`}
               />
             ))}
