@@ -112,14 +112,12 @@ function Home() {
   const handleVehicleScroll = () => {
     const el = vehicleScrollRef.current;
     if (!el) return;
-    // center of the visible area
     const center = el.scrollLeft + el.clientWidth / 2;
     let closestIdx = 0;
     let closestDist = Infinity;
     const children = Array.from(el.children) as HTMLElement[];
     children.forEach((child, idx) => {
-      const rect = child.getBoundingClientRect();
-      const childCenter = child.offsetLeft + rect.width / 2;
+      const childCenter = child.offsetLeft + child.clientWidth / 2;
       const dist = Math.abs(childCenter - center);
       if (dist < closestDist) {
         closestDist = dist;
@@ -131,6 +129,16 @@ function Home() {
       setVehicleIndex(closestIdx);
       const id = VEHICLE_TYPES[closestIdx]?.id;
       if (id) setSelectedVehicle(id);
+    }
+  };
+
+  const handleVehicleSelect = (id: typeof VEHICLE_TYPES[number]["id"], index: number) => {
+    setSelectedVehicle(id);
+    setVehicleIndex(index);
+    const el = vehicleScrollRef.current;
+    const child = el?.children[index] as HTMLElement | undefined;
+    if (el && child) {
+      child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     }
   };
   const [showRecent, setShowRecent] = useState(false);
@@ -216,7 +224,6 @@ function Home() {
           <div className="flex flex-col items-center mt-1">
             <span
               className="text-[22px] font-black tracking-[-0.02em] leading-none text-white sm:bg-gradient-to-r sm:from-white sm:via-[#c8b8ff] sm:to-[#7B5CFF] sm:bg-clip-text sm:text-transparent"
-              style={{ WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}
             >
               VAYRIX
             </span>
@@ -244,8 +251,8 @@ function Home() {
           <div
             ref={vehicleScrollRef}
             onScroll={handleVehicleScroll}
-            className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain"
-            style={{ scrollbarWidth: "none", touchAction: "pan-x" }}
+            className="flex gap-3 overflow-x-auto px-1 py-3 snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain scroll-smooth"
+            style={{ scrollbarWidth: "none", touchAction: "pan-x", scrollPadding: "0 1rem" }}
           >
             {VEHICLE_TYPES.map((v, i) => {
               const active = vehicleIndex === i;
@@ -269,20 +276,11 @@ function Home() {
                 // </button>
                 <button
                   key={v.id}
-                  onClick={() => {
-                    setSelectedVehicle(v.id);
-                    // scroll into view when clicked (center the card)
-                    const el = vehicleScrollRef.current;
-                    const child = el?.children[i] as HTMLElement | undefined;
-                    if (el && child) {
-                      const left = Math.max(0, child.offsetLeft - (el.clientWidth - child.clientWidth) / 2);
-                      el.scrollTo({ left, behavior: "smooth" });
-                    }
-                  }}
-                  className={`snap-start shrink-0 w-[100px] rounded-2xl border overflow-hidden text-left transform-gpu transition-transform duration-300 will-change-transform select-none ${
+                  onClick={() => handleVehicleSelect(v.id, i)}
+                  className={`snap-start shrink-0 w-[100px] rounded-2xl border overflow-hidden text-left transform-gpu transition-all duration-300 will-change-transform select-none ${
                     active
-                      ? "border-[#7B5CFF]/70 bg-[#1a2348] scale-125 -translate-y-3 z-30 shadow-[0_18px_40px_-12px_rgba(123,92,255,0.5)]"
-                      : "border-white/5 bg-[#141B3D] scale-90 opacity-80"
+                      ? "border-[#7B5CFF]/80 bg-[#1a2348] scale-110 -translate-y-2 z-20 shadow-[0_14px_30px_-10px_rgba(123,92,255,0.6)] ring-2 ring-[#7B5CFF]/40"
+                      : "border-white/5 bg-[#141B3D] scale-90 opacity-70"
                   }`}
                 >
                   <div className="aspect-[3/2] w-full overflow-hidden">
