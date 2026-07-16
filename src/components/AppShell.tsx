@@ -25,7 +25,7 @@ export function AppShell({
     <PhoneFrame>
       <div className="relative flex h-full flex-col overflow-hidden">
 
-        {!hideStatus && <StatusBar />}
+        {/* {!hideStatus && <StatusBar />} */}
 
         <div
           className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden overscroll-contain"

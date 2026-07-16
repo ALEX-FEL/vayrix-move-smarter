@@ -56,7 +56,7 @@ function SharedDetail() {
   return (
     <PhoneFrame>
       <div className="flex flex-col h-full min-h-screen sm:min-h-[860px]">
-        <StatusBar />
+        {/* <StatusBar /> */}
         <div className="px-5 py-4 flex items-center gap-3">
           <button
             onClick={() => navigate({ to: "/shared" })}

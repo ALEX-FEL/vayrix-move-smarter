@@ -18,7 +18,7 @@ function Auth() {
   return (
     <PhoneFrame>
       <div className="flex flex-col h-full min-h-screen sm:min-h-[860px]">
-        <StatusBar />
+        {/* <StatusBar /> */}
         <div className="flex-1 px-6 pt-8 pb-8 flex flex-col">
           <div className="flex items-center gap-3 animate-float-up">
             <VayrixLogo size={48} />

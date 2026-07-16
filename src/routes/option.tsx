@@ -25,7 +25,7 @@ function Options() {
   return (
     <PhoneFrame>
       <div className="flex flex-col h-[100dvh] sm:h-[860px] overflow-hidden">
-        <StatusBar />
+        {/* <StatusBar /> */}
 
         <div className="px-5 py-4 flex items-center gap-3">
           <button

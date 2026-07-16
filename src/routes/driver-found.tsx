@@ -27,7 +27,7 @@ function DriverFound() {
           origin={{ lat: draft.from.lat, lng: draft.from.lng }}
           destination={draft.to ? { lat: draft.to.lat, lng: draft.to.lng } : undefined}
         />
-        <StatusBar />
+        {/* <StatusBar /> */}
 
         <div className="absolute top-12 left-4 right-4 flex items-center justify-between">
           <button

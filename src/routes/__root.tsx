@@ -10,6 +10,7 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 import { RideProvider } from "@/providers/RideProvider";
 import { SafetyProvider } from "@/providers/SafetyProvider";
+import { useRegisterSW } from "virtual:pwa-register/react";
 
 import appCss from "../styles.css?url";
 
@@ -85,6 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -115,6 +117,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useRegisterSW();
+
   return (
     <QueryClientProvider client={queryClient}>
       <RideProvider>
