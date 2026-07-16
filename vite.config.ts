@@ -16,7 +16,7 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["icons/icon-192.svg", "icons/icon-512.svg"],
+      includeAssets: ["icons/icon-192.jpeg", "icons/icon-512.jpeg"],
       manifest: {
         name: "Vayrix",
         short_name: "Vayrix",
@@ -28,14 +28,14 @@ export default defineConfig({
         orientation: "portrait",
         icons: [
           {
-            src: "/icons/icon-192.svg",
+            src: "/icons/icon-192.jpeg",
             sizes: "192x192",
-            type: "image/svg+xml",
+            type: "image/jpeg",
           },
           {
-            src: "/icons/icon-512.svg",
+            src: "/icons/icon-512.jpeg",
             sizes: "512x512",
-            type: "image/svg+xml",
+            type: "image/jpeg",
           },
         ],
       },
