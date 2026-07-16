@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { StatusBar } from "@/components/StatusBar";
-import { ArrowLeft, Bike, Car, Sparkles, Clock } from "lucide-react";
+import { ArrowLeft, Bike, Car, Sparkles, Clock, Bus, Package } from "lucide-react";
 import { useRide } from "@/providers/RideProvider";
 import { useEffect, useState } from "react";
 import { rideService } from "@/services/ride.service";
-import type { AsyncState, VehicleOption } from "@/models";
+import type { AsyncState, VehicleOption, VehicleType } from "@/models";
 import { QueryView } from "@/components/QueryView";
 
 export const Route = createFileRoute("/flow/estimate")({
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/flow/estimate")({
   component: Estimate,
 });
 
-const icons = { moto: Bike, classic: Car, premium: Sparkles } as const;
+const icons: Record<VehicleType, typeof Bike> = { moto: Bike, classic: Car, premium: Sparkles, van: Bus, livraison: Package };
 
 function Estimate() {
   const navigate = useNavigate();
