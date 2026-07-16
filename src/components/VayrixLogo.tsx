@@ -1,4 +1,4 @@
-import logoAsset from "@/assets/vayrix-logo.png.asset.json";
+import logoAsset from "@/assets/vayrix-logo.jpeg.asset.json";
 
 export function VayrixLogo({ size = 88 }: { size?: number }) {
   return (
