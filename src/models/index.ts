@@ -8,7 +8,7 @@ export type Place = {
   lng: number;
 };
 
-export type VehicleType = "moto" | "classic" | "premium";
+export type VehicleType = "moto" | "classic" | "premium" | "van" | "livraison";
 
 export type VehicleOption = {
   id: VehicleType;
