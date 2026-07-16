@@ -98,6 +98,8 @@ function Home() {
   const [selectedVehicle, setSelectedVehicle] = useState<typeof VEHICLE_TYPES[number]["id"]>(
     (draft.vehicle as typeof VEHICLE_TYPES[number]["id"]) ?? "classic",
   );
+  // Titre dynamique basé sur le véhicule sélectionné
+  const selectedVehicleLabel = VEHICLE_TYPES.find((v) => v.id === selectedVehicle)?.label ?? "";
   const [showRecent, setShowRecent] = useState(false);
   const [adIndex, setAdIndex] = useState(0);
   const adScrollRef = useRef<HTMLDivElement>(null);
@@ -180,8 +182,8 @@ function Home() {
           {/* Logo centré, légèrement en retrait sous les boutons + arc décoratif */}
           <div className="flex flex-col items-center mt-1">
             <span
-              className="text-[22px] font-black tracking-[-0.02em] leading-none bg-gradient-to-r from-white via-[#c8b8ff] to-[#7B5CFF] bg-clip-text text-transparent"
-              style={{ WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+              className="text-[22px] font-black tracking-[-0.02em] leading-none text-white sm:bg-gradient-to-r sm:from-white sm:via-[#c8b8ff] sm:to-[#7B5CFF] sm:bg-clip-text sm:text-transparent"
+              style={{ WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}
             >
               VAYRIX
             </span>
@@ -213,23 +215,40 @@ function Home() {
             {VEHICLE_TYPES.map((v) => {
               const active = selectedVehicle === v.id;
               return (
+                // <button
+                //   key={v.id}
+                //   onClick={() => setSelectedVehicle(v.id)}
+                //   className={`snap-start shrink-0 w-[100px] h-[92px] rounded-2xl border overflow-hidden text-left transition select-none ${
+                //     active ? "border-[#7B5CFF]/70 shadow-glow bg-[#1a2348]" : "border-white/5 bg-[#141B3D]"
+                //   }`}
+                // >
+                //   <img
+                //     src={v.image}
+                //     alt={v.label}
+                //     draggable={false}
+                //     className="h-[60px] w-full object-cover"
+                //   />
+                //   {/* <p className="h-8 flex items-center justify-center text-xs font-semibold px-1 truncate">
+                //     {v.label}
+                //   </p> */}
+                // </button>
                 <button
-                  key={v.id}
-                  onClick={() => setSelectedVehicle(v.id)}
-                  className={`snap-start shrink-0 w-[100px] h-[92px] rounded-2xl border overflow-hidden text-left transition select-none ${
-                    active ? "border-[#7B5CFF]/70 shadow-glow bg-[#1a2348]" : "border-white/5 bg-[#141B3D]"
-                  }`}
-                >
+                key={v.id}
+                onClick={() => setSelectedVehicle(v.id)}
+                className={`snap-start shrink-0 w-[100px] rounded-2xl border overflow-hidden text-left transition select-none ${
+                  active ? "border-[#7B5CFF]/70 shadow-glow bg-[#1a2348]" : "border-white/5 bg-[#141B3D]"
+                }`}
+              >
+                <div className="aspect-[3/2] w-full overflow-hidden">
                   <img
                     src={v.image}
                     alt={v.label}
                     draggable={false}
-                    className="h-[60px] w-full object-cover"
+                    className="h-full w-full object-cover"
                   />
-                  <p className="h-8 flex items-center justify-center text-xs font-semibold px-1 truncate">
-                    {v.label}
-                  </p>
-                </button>
+                </div>
+                {/* le reste de ta carte (label, etc.) en dessous si besoin */}
+              </button>
               );
             })}
           </div>
@@ -237,7 +256,9 @@ function Home() {
 
         {/* Zone "Course" — titre centré + champ destination */}
         <section className="rounded-2xl bg-[#141B3D] border border-white/5 p-4 shadow-card animate-float-up [animation-delay:40ms]">
-          <h2 className="text-center text-sm font-semibold tracking-wide mb-3">Course</h2>
+          <h2 className="text-center text-sm font-semibold tracking-wide mb-3">
+            {selectedVehicleLabel ? `${selectedVehicleLabel}` : "Course"}
+          </h2>
 
           <div>
             <div
