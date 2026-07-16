@@ -429,7 +429,7 @@ function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
                 <div className="absolute inset-x-0 bottom-0 p-3">
                   <p className="text-sm font-semibold text-white leading-tight line-clamp-2">{ad.title}</p>
-                  <p className="mt-1 text-[11px] text-white/80 leading-snug line-clamp-2">{ad.subtitle}</p>
+                  <p className="mt-2 text-[15px] text-white/80 leading-snug line-clamp-2">{ad.subtitle}</p>
                   <span className="mt-2 inline-flex items-center justify-center rounded-full bg-white/90 px-3.5 py-2 text-[11px] font-semibold text-[#0A0E27] shadow-lg backdrop-blur transition group-hover:bg-white group-active:scale-[0.98]">
                     {ad.cta}
                   </span>

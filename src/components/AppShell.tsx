@@ -32,14 +32,14 @@ export function AppShell({
           style={{
             paddingBottom: hideNav
               ? "1rem"
-              : "calc(108px + env(safe-area-inset-bottom, 0px))",
+              : "calc(64px + env(safe-area-inset-bottom, 0px))",
           }}
         >
           {children}
         </div>
 
         {!hideNav && (
-          <nav className="absolute bottom-[calc(0.85rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[92%] max-w-sm z-30">
+          <nav className="absolute bottom-[calc(0.45rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[92%] max-w-sm z-30">
             <div
               className="
                 relative
