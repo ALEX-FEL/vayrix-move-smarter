@@ -32,24 +32,28 @@ const ADS = [
     title: "Mobile Money -10%",
     subtitle: "Payez votre course en Mobile Money et économisez sur chaque trajet cette semaine.",
     cta: "En profiter",
+    link: "https://www.google.com/search?q=Mobile+Money+Cameroon",
     image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80&auto=format&fit=crop",
   },
   {
     title: "Resto Le Palais — Livraison",
     subtitle: "Commandez votre plat préféré et faites-le livrer par un chauffeur Vayrix en 20 min.",
     cta: "Découvrir",
+    link: "https://www.google.com/search?q=Resto+Le+Palais",
     image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80&auto=format&fit=crop",
   },
   {
     title: "Sécurit'Route Assurance",
     subtitle: "Une assurance auto pensée pour les chauffeurs Vayrix, souscription en 5 minutes.",
     cta: "En savoir plus",
+    link: "https://www.google.com/search?q=assurance+auto+Cameroon",
     image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80&auto=format&fit=crop",
   },
   {
     title: "Marché Frais Supermarché",
     subtitle: "Vos courses de la semaine livrées à domicile, réservez votre créneau via Vayrix.",
     cta: "Réserver",
+    link: "https://www.google.com/search?q=Marché+Frais+Supermarché",
     image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&q=80&auto=format&fit=crop",
   },
 ];
@@ -405,13 +409,16 @@ function Home() {
           <div
             ref={adScrollRef}
             onScroll={handleAdsScroll}
-            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain"
+            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain pb-1"
             style={{ scrollbarWidth: "none", touchAction: "pan-x" }}
           >
             {ADS.map((ad, i) => (
-              <div
+              <a
                 key={i}
-                className="relative snap-start shrink-0 w-[210px] h-[100px] rounded-2xl overflow-hidden border border-white/5"
+                href={ad.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative snap-start shrink-0 w-[230px] h-[126px] rounded-[22px] overflow-hidden border border-white/10 bg-[#0A0E27] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.45)] transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
               >
                 <img
                   src={ad.image}
@@ -419,16 +426,15 @@ function Home() {
                   draggable={false}
                   className="absolute inset-0 h-full w-full object-cover select-none"
                 />
-                {/* Dégradé pour garder le texte lisible, sans déborder du cadre */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-2.5">
-                  <p className="text-xs font-semibold text-white leading-tight truncate">{ad.title}</p>
-                  <p className="mt-0.5 text-[10px] text-white/80 leading-snug line-clamp-2">{ad.subtitle}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
+                <div className="absolute inset-x-0 bottom-0 p-3">
+                  <p className="text-sm font-semibold text-white leading-tight line-clamp-2">{ad.title}</p>
+                  <p className="mt-1 text-[11px] text-white/80 leading-snug line-clamp-2">{ad.subtitle}</p>
+                  <span className="mt-2 inline-flex items-center justify-center rounded-full bg-white/90 px-3.5 py-2 text-[11px] font-semibold text-[#0A0E27] shadow-lg backdrop-blur transition group-hover:bg-white group-active:scale-[0.98]">
+                    {ad.cta}
+                  </span>
                 </div>
-                <span className="absolute top-1.5 right-1.5 text-[9px] font-semibold text-white bg-white/15 backdrop-blur px-1.5 py-0.5 rounded-full">
-                  {ad.cta}
-                </span>
-              </div>
+              </a>
             ))}
           </div>
 
