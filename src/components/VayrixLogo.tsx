@@ -1,9 +1,9 @@
-import logoAsset from "@/assets/vayrix-logo.jpeg.asset.json";
+import logo from "@/assets/lo.jpeg";
 
 export function VayrixLogo({ size = 88 }: { size?: number }) {
   return (
     <img
-      src={logoAsset.url}
+      src={logo}
       alt="Vayrix"
       width={size}
       height={size}
