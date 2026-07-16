@@ -95,7 +95,9 @@ function Home() {
   // TODO: brancher sur un vrai service de notifications
   const [notificationCount] = useState(2);
 
-  const [selectedVehicle, setSelectedVehicle] = useState(draft.vehicle ?? "classic");
+  const [selectedVehicle, setSelectedVehicle] = useState<typeof VEHICLE_TYPES[number]["id"]>(
+    (draft.vehicle as typeof VEHICLE_TYPES[number]["id"]) ?? "classic",
+  );
   const [showRecent, setShowRecent] = useState(false);
   const [adIndex, setAdIndex] = useState(0);
   const adScrollRef = useRef<HTMLDivElement>(null);
