@@ -100,6 +100,35 @@ function Home() {
   );
   // Titre dynamique basé sur le véhicule sélectionné
   const selectedVehicleLabel = VEHICLE_TYPES.find((v) => v.id === selectedVehicle)?.label ?? "";
+  const vehicleScrollRef = useRef<HTMLDivElement | null>(null);
+  const [vehicleIndex, setVehicleIndex] = useState(() =>
+    Math.max(0, VEHICLE_TYPES.findIndex((v) => v.id === selectedVehicle)),
+  );
+
+  const handleVehicleScroll = () => {
+    const el = vehicleScrollRef.current;
+    if (!el) return;
+    // center of the visible area
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let closestIdx = 0;
+    let closestDist = Infinity;
+    const children = Array.from(el.children) as HTMLElement[];
+    children.forEach((child, idx) => {
+      const rect = child.getBoundingClientRect();
+      const childCenter = child.offsetLeft + rect.width / 2;
+      const dist = Math.abs(childCenter - center);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIdx = idx;
+      }
+    });
+
+    if (closestIdx !== vehicleIndex) {
+      setVehicleIndex(closestIdx);
+      const id = VEHICLE_TYPES[closestIdx]?.id;
+      if (id) setSelectedVehicle(id);
+    }
+  };
   const [showRecent, setShowRecent] = useState(false);
   const [adIndex, setAdIndex] = useState(0);
   const adScrollRef = useRef<HTMLDivElement>(null);
@@ -209,11 +238,13 @@ function Home() {
         {/* Carrousel manuel — choix du type de véhicule, directement sur l'accueil */}
         <section className="animate-float-up [animation-delay:20ms]">
           <div
+            ref={vehicleScrollRef}
+            onScroll={handleVehicleScroll}
             className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain"
             style={{ scrollbarWidth: "none", touchAction: "pan-x" }}
           >
-            {VEHICLE_TYPES.map((v) => {
-              const active = selectedVehicle === v.id;
+            {VEHICLE_TYPES.map((v, i) => {
+              const active = vehicleIndex === i;
               return (
                 // <button
                 //   key={v.id}
@@ -233,22 +264,32 @@ function Home() {
                 //   </p> */}
                 // </button>
                 <button
-                key={v.id}
-                onClick={() => setSelectedVehicle(v.id)}
-                className={`snap-start shrink-0 w-[100px] rounded-2xl border overflow-hidden text-left transition select-none ${
-                  active ? "border-[#7B5CFF]/70 shadow-glow bg-[#1a2348]" : "border-white/5 bg-[#141B3D]"
-                }`}
-              >
-                <div className="aspect-[3/2] w-full overflow-hidden">
-                  <img
-                    src={v.image}
-                    alt={v.label}
-                    draggable={false}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                {/* le reste de ta carte (label, etc.) en dessous si besoin */}
-              </button>
+                  key={v.id}
+                  onClick={() => {
+                    setSelectedVehicle(v.id);
+                    // scroll into view when clicked (center the card)
+                    const el = vehicleScrollRef.current;
+                    const child = el?.children[i] as HTMLElement | undefined;
+                    if (el && child) {
+                      const left = Math.max(0, child.offsetLeft - (el.clientWidth - child.clientWidth) / 2);
+                      el.scrollTo({ left, behavior: "smooth" });
+                    }
+                  }}
+                  className={`snap-start shrink-0 w-[100px] rounded-2xl border overflow-hidden text-left transform-gpu transition-transform duration-300 will-change-transform select-none ${
+                    active
+                      ? "border-[#7B5CFF]/70 bg-[#1a2348] scale-125 -translate-y-3 z-30 shadow-[0_18px_40px_-12px_rgba(123,92,255,0.5)]"
+                      : "border-white/5 bg-[#141B3D] scale-90 opacity-80"
+                  }`}
+                >
+                  <div className="aspect-[3/2] w-full overflow-hidden">
+                    <img
+                      src={v.image}
+                      alt={v.label}
+                      draggable={false}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                </button>
               );
             })}
           </div>
