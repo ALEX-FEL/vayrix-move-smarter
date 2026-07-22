@@ -30,10 +30,10 @@ export function AppShell({
         <div
           className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden overscroll-contain"
           style={{
-            paddingBottom: hideNav
-              ? "1rem"
-              : "calc(64px + env(safe-area-inset-bottom, 0px))",
-          }}
+  paddingBottom: hideNav
+    ? "1rem"
+    : "calc(64px + env(safe-area-inset-bottom, 0px))",
+}}
         >
           {children}
         </div>
