@@ -625,10 +625,9 @@ function Home() {
                 }`}
               />
             ))}
-          </div> </AppShell>
+          </div>
         </section>
-     
       </div>
-    
+    </AppShell>
   );
 }
