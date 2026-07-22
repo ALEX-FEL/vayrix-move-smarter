@@ -128,6 +128,17 @@ function Home() {
     }, durationMs);
   };
 
+  // ── Contrôle infini fiable : on ne repositionne JAMAIS le scroll pendant
+  // qu'un doigt touche encore l'écran. On attend soit `scrollend` (le scroll,
+  // y compris l'inertie, est totalement stabilisé), soit — pour les
+  // navigateurs qui ne supportent pas encore cet événement — un debounce sur
+  // `scroll` combiné à la vérification que le doigt est relevé. Sans ça, le
+  // scrollTo() de correction entre en conflit avec le geste tactile actif et
+  // donne l'impression que le carrousel "revient" au premier véhicule.
+  const isPointerDown = useRef(false);
+  const scrollSettleTimeout = useRef<number | null>(null);
+  const supportsScrollEnd = typeof window !== "undefined" && "onscrollend" in window;
+
   const centerVehicle = (index: number, behavior: ScrollBehavior = "smooth") => {
     const el = vehicleScrollRef.current;
     if (!el) return;
@@ -158,11 +169,70 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleVehicleScroll = () => {
-    // Un scroll généré par notre propre code : on ignore, la logique de
-    // sélection a déjà été appliquée au clic / à l'init.
-    if (isProgrammaticScroll.current) return;
+  // Suivi du doigt sur l'écran : tant qu'il est posé, on n'effectue aucune
+  // correction de boucle, même si on est visuellement proche du bord.
+  useEffect(() => {
+    const el = vehicleScrollRef.current;
+    if (!el) return;
 
+    const onPointerDown = () => { isPointerDown.current = true; };
+    const onPointerUp = () => {
+      isPointerDown.current = false;
+      // Le doigt vient d'être relevé : si le navigateur ne supporte pas
+      // `scrollend`, on planifie quand même une vérification de correction
+      // une fois l'inertie terminée.
+      if (!supportsScrollEnd) {
+        scheduleLoopCorrectionCheck();
+      }
+    };
+
+    el.addEventListener("pointerdown", onPointerDown, { passive: true });
+    el.addEventListener("pointerup", onPointerUp, { passive: true });
+    el.addEventListener("pointercancel", onPointerUp, { passive: true });
+
+    return () => {
+      el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("pointerup", onPointerUp);
+      el.removeEventListener("pointercancel", onPointerUp);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // `scrollend` : déclenché une seule fois, quand le scroll (y compris
+  // l'inertie post-swipe) est totalement stabilisé. C'est le bon endroit
+  // pour faire le saut de boucle : le doigt n'est plus dessus et rien ne
+  // bouge plus, donc le saut entre deux clones identiques est invisible.
+  useEffect(() => {
+    const el = vehicleScrollRef.current;
+    if (!el || !supportsScrollEnd) return;
+
+    const onScrollEnd = () => {
+      if (isProgrammaticScroll.current || isPointerDown.current) return;
+      runLoopCorrection();
+    };
+
+    el.addEventListener("scrollend", onScrollEnd);
+    return () => el.removeEventListener("scrollend", onScrollEnd);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const scheduleLoopCorrectionCheck = () => {
+    if (scrollSettleTimeout.current) {
+      window.clearTimeout(scrollSettleTimeout.current);
+    }
+    // Fallback debounce (~150ms sans nouvel event de scroll = scroll arrêté).
+    scrollSettleTimeout.current = window.setTimeout(() => {
+      if (!isPointerDown.current && !isProgrammaticScroll.current) {
+        runLoopCorrection();
+      }
+    }, 150);
+  };
+
+  // Repositionne silencieusement le scroll d'un groupe complet quand on est
+  // entré trop profondément dans le premier ou le dernier clone — mais
+  // seulement une fois le scroll réellement arrêté et le doigt relevé
+  // (appelé uniquement depuis `scrollend` ou le fallback debounce ci-dessus).
+  const runLoopCorrection = () => {
     const el = vehicleScrollRef.current;
     if (!el) return;
 
@@ -171,22 +241,33 @@ function Home() {
 
     const step = firstChild.getBoundingClientRect().width + 12;
     const groupWidth = step * VEHICLE_TYPES.length;
-    const threshold = Math.max(60, step * 0.6);
+    // Marge élargie : la correction se déclenche plus tôt, bien avant que
+    // l'utilisateur soit visuellement au bord, pour rester imperceptible.
+    const threshold = Math.max(100, step * 1.2);
     const isNearStart = el.scrollLeft < threshold;
     const isNearEnd = el.scrollLeft + el.clientWidth > el.scrollWidth - threshold;
 
     if (isNearStart) {
       lockProgrammaticScroll(50);
       el.scrollTo({ left: el.scrollLeft + groupWidth, behavior: "auto" });
-      return;
-    }
-
-    if (isNearEnd) {
+    } else if (isNearEnd) {
       lockProgrammaticScroll(50);
       el.scrollTo({ left: el.scrollLeft - groupWidth, behavior: "auto" });
-      return;
     }
+  };
 
+  const handleVehicleScroll = () => {
+    // Un scroll généré par notre propre code : on ignore, la logique de
+    // sélection a déjà été appliquée au clic / à l'init.
+    if (isProgrammaticScroll.current) return;
+
+    const el = vehicleScrollRef.current;
+    if (!el) return;
+
+    // Mise à jour "live" de la sélection visuelle (carte active, scale,
+    // opacité) à chaque scroll — sans jamais repositionner le scroll ici.
+    // Le repositionnement de boucle est géré uniquement par runLoopCorrection,
+    // appelé après stabilisation (scrollend / fallback debounce ci-dessous).
     const center = el.scrollLeft + el.clientWidth / 2;
     let closestIdx = 0;
     let closestDist = Infinity;
@@ -205,6 +286,14 @@ function Home() {
     if (id && id !== selectedVehicle) {
       setSelectedVehicle(id);
       setVehicleIndex(nextRealIndex);
+    }
+
+    // Fallback pour les navigateurs sans `scrollend` : on reprogramme la
+    // vérification de boucle à chaque scroll event ; comme elle est
+    // debounce (150ms), elle ne s'exécute réellement qu'une fois le scroll
+    // arrêté (et seulement si le doigt n'est plus posé).
+    if (!supportsScrollEnd) {
+      scheduleLoopCorrectionCheck();
     }
   };
 
