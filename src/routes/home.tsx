@@ -388,7 +388,7 @@ function Home() {
 
   return (
     <AppShell>
-      <div className="flex flex-col min-h-full px-5 pt-2 pb-6 space-y-5 w-full overflow-x-hidden">
+      <div className="px-5 pt-2 pb-6 space-y-5 w-full overflow-x-hidden">
         {/* Header — menu (options/profil) · notifications, logo légèrement en dessous */}
         <header className="relative animate-float-up">
           <div className="flex items-center justify-between">
@@ -580,20 +580,22 @@ function Home() {
         </section>
 
         {/*
-          Publicité — dernière section de la page. `flex-1 flex flex-col` lui
-          permet de s'étirer sur tout l'espace vertical restant (le parent est
-          déjà `flex flex-col min-h-full`), donc plus aucun vide résiduel entre
-          elle et le bas de l'écran / la nav. Le carrousel affiche désormais
-          une seule publicité à la fois (largeur pleine, `w-full`) au lieu de
-          deux cartes visibles côte à côte.
+          Publicité — dernière section de la page. La hauteur des cartes est
+          basée sur le viewport (vh), pas sur une chaîne de flex-grow/h-full
+          en cascade à travers plusieurs ancêtres : cette chaîne-là (essayée
+          précédemment) ne résout pas de façon fiable sur tous les
+          navigateurs mobiles — elle faisait disparaître les images (hauteur
+          effondrée à ~0) et cassait le scroll dès que l'accordéon "Trajets
+          récents" ajoutait du contenu. Le carrousel garde une seule
+          publicité par vue (w-full) au lieu de deux cartes côte à côte.
         */}
-        <section className="flex-1 flex flex-col animate-float-up [animation-delay:80ms]">
+        <section className="animate-float-up [animation-delay:80ms]">
           <h3 className="text-xs uppercase tracking-widest text-[#B8BED6] mb-2">Publicité</h3>
 
           <div
             ref={adScrollRef}
             onScroll={handleAdsScroll}
-            className="flex-1 flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain"
+            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain pb-1"
             style={{ scrollbarWidth: "none", touchAction: "pan-x" }}
           >
             {adItems.map((ad, i) => (
@@ -602,7 +604,7 @@ function Home() {
                 href={ad.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative snap-center shrink-0 w-full h-full min-h-[126px] rounded-[22px] overflow-hidden border border-white/10 bg-[#0A0E27] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.45)] transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
+                className="group relative snap-center shrink-0 w-full h-[32vh] min-h-[160px] max-h-[240px] rounded-[22px] overflow-hidden border border-white/10 bg-[#0A0E27] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.45)] transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
               >
                 <img
                   src={ad.image}
@@ -623,7 +625,7 @@ function Home() {
           </div>
 
           {/* Indicateurs — suivent le scroll manuel */}
-          <div className="mt-2 flex items-center justify-center gap-1.5 shrink-0">
+          <div className="mt-2 flex items-center justify-center gap-1.5">
             {ADS.map((_, i) => (
               <span
                 key={i}
