@@ -625,6 +625,11 @@ function Home() {
             ))}
           </div>
         </section>
+
+        {/* Petit espace de respiration en bas, pour que le scroll puisse
+            dégager complètement la section Publicité de la nav du bas
+            quand l'accordéon "Trajets récents" pousse le contenu */}
+        <div className="h-6" aria-hidden="true" />
       </div>
     </AppShell>
   );
