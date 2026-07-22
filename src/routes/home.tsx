@@ -627,14 +627,6 @@ function Home() {
             ))}
           </div>
         </section>
-
-        {/*
-          Espace réservé pour que la barre de navigation flottante (gérée par AppShell,
-          non fournie) puisse se superposer en position fixed/sticky par-dessus la zone
-          publicité sans en masquer le contenu utile. Ajuste pb-* selon la hauteur réelle
-          de la nav une fois AppShell.tsx partagé.
-        */}
-        <div className="h-20" />
       </div>
     </AppShell>
   );
