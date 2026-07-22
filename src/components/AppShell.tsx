@@ -3,13 +3,11 @@ import { PhoneFrame } from "./PhoneFrame";
 import { StatusBar } from "./StatusBar";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Home, Clock, User } from "lucide-react";
-
 const tabs = [
   { to: "/home", icon: Home, label: "" },
   { to: "/history", icon: Clock, label: "" },
   { to: "/profile", icon: User, label: "" },
 ] as const;
-
 export function AppShell({
   children,
   hideNav = false,
@@ -20,24 +18,25 @@ export function AppShell({
   hideStatus?: boolean;
 }) {
   const { pathname } = useLocation();
-
   return (
     <PhoneFrame>
       <div className="relative flex h-full flex-col overflow-hidden">
-
         {/* {!hideStatus && <StatusBar />} */}
-
         <div
           className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden overscroll-contain"
           style={{
-  paddingBottom: hideNav
-    ? "1rem"
-    : "calc(64px + env(safe-area-inset-bottom, 0px))",
-}}
+            // Avant : "calc(64px + env(safe-area-inset-bottom, 0px))" réservait
+            // la hauteur de la nav en plus de sa propre position, ce qui créait
+            // un vide entre le contenu (ex: section publicité) et la nav.
+            // La nav est déjà en `position: absolute` + `z-30` par-dessus le
+            // contenu : on ne garde donc ici que l'inset de sécurité du
+            // téléphone (encoche/barre système), pour que le contenu défile
+            // bien jusqu'en dessous de la nav, sans espace réservé en trop.
+            paddingBottom: hideNav ? "1rem" : "env(safe-area-inset-bottom, 0px)",
+          }}
         >
           {children}
         </div>
-
         {!hideNav && (
           <nav className="absolute bottom-[calc(0.45rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[92%] max-w-sm z-30">
             <div
@@ -59,7 +58,6 @@ export function AppShell({
               {tabs.map((t) => {
                 const active = pathname === t.to;
                 const Icon = t.icon;
-
                 return (
                   <Link
                     key={t.to}
@@ -84,7 +82,6 @@ export function AppShell({
                         }`}
                       />
                     </div>
-
                     <span
                       className={`text-[10px] font-medium tracking-wide leading-none whitespace-nowrap transition-all duration-300 ${
                         active ? "text-white opacity-100" : "text-[#AAB2D5] opacity-70"
@@ -98,7 +95,6 @@ export function AppShell({
             </div>
           </nav>
         )}
-
       </div>
     </PhoneFrame>
   );
