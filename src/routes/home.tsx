@@ -589,10 +589,11 @@ function Home() {
           récents" ajoutait du contenu. Le carrousel garde une seule
           publicité par vue (w-full) au lieu de deux cartes côte à côte.
         */}
-        <section className="animate-float-up [animation-delay:80ms]">
-          <h3 className="text-xs uppercase tracking-widest text-[#B8BED6] mb-2">Publicité</h3>
+       {/* Publicité — format compact, texte disposé directement sur l'image, sans flèches */}
+<section className="animate-float-up [animation-delay:80ms]">
+  <h3 className="text-xs uppercase tracking-widest text-[#B8BED6] mb-2">Publicité</h3>
 
-          <div
+  <div
     ref={adScrollRef}
     onScroll={handleAdsScroll}
     className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain pb-1"
@@ -600,7 +601,7 @@ function Home() {
   >
     {adItems.map((ad, i) => (
       
-        key={`${ad.title}-${i}`}
+        <a key={`${ad.title}-${i}`}
         href={ad.link}
         target="_blank"
         rel="noopener noreferrer"
@@ -624,18 +625,18 @@ function Home() {
     ))}
   </div>
 
-          {/* Indicateurs — suivent le scroll manuel */}
-          <div className="mt-2 flex items-center justify-center gap-1.5">
-            {ADS.map((_, i) => (
-              <span
-                key={i}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === activeAdIndex ? "w-4 bg-[#7B5CFF]" : "w-1.5 bg-white/15"
-                }`}
-              />
-            ))}
-          </div>
-        </section>
+  {/* Indicateurs — suivent le scroll manuel */}
+  <div className="mt-2 flex items-center justify-center gap-1.5">
+    {ADS.map((_, i) => (
+      <span
+        key={i}
+        className={`h-1.5 rounded-full transition-all ${
+          i === activeAdIndex ? "w-4 bg-[#7B5CFF]" : "w-1.5 bg-white/15"
+        }`}
+      />
+    ))}
+  </div>
+</section>
       </div>
     </AppShell>
   );
