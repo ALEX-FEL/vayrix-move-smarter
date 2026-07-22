@@ -589,53 +589,54 @@ function Home() {
           récents" ajoutait du contenu. Le carrousel garde une seule
           publicité par vue (w-full) au lieu de deux cartes côte à côte.
         */}
-        <section className="animate-float-up [animation-delay:80ms]">
-          <h3 className="text-xs uppercase tracking-widest text-[#B8BED6] mb-2">Publicité</h3>
+        {/* Publicité — format compact, texte disposé directement sur l'image, sans flèches */}
+<section className="animate-float-up [animation-delay:80ms]">
+  <h3 className="text-xs uppercase tracking-widest text-[#B8BED6] mb-2">Publicité</h3>
 
-          <div
-            ref={adScrollRef}
-            onScroll={handleAdsScroll}
-            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain pb-1"
-            style={{ scrollbarWidth: "none", touchAction: "pan-x" }}
-          >
-            {adItems.map((ad, i) => (
-              <a
-                key={`${ad.title}-${i}`}
-                href={ad.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative snap-center shrink-0 w-full h-[32vh] min-h-[160px] max-h-[240px] rounded-[22px] overflow-hidden border border-white/10 bg-[#0A0E27] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.45)] transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
-              >
-                <img
-                  src={ad.image}
-                  alt={ad.title}
-                  draggable={false}
-                  className="absolute inset-0 h-full w-full object-cover select-none"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
-                <div className="absolute inset-x-0 bottom-0 p-3">
-                  <p className="text-[11px] font-semibold text-white leading-tight line-clamp-2">{ad.title}</p>
-                  <p className="mt-1.5 text-[10px] text-white/80 leading-snug line-clamp-2">{ad.subtitle}</p>
-                  <span className="mt-2 inline-flex items-center justify-center rounded-full bg-white/90 px-2.5 py-1.5 text-[10px] font-semibold text-[#0A0E27] shadow-lg backdrop-blur transition group-hover:bg-white group-active:scale-[0.98]">
-                    {ad.cta}
-                  </span>
-                </div>
-              </a>
-            ))}
-          </div>
+  <div
+    ref={adScrollRef}
+    onScroll={handleAdsScroll}
+    className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing overscroll-x-contain pb-1"
+    style={{ scrollbarWidth: "none", touchAction: "pan-x" }}
+  >
+    {adItems.map((ad, i) => (
+      
+        key={`${ad.title}-${i}`}
+        href={ad.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group relative snap-start shrink-0 w-full h-[126px] rounded-[22px] overflow-hidden border border-white/10 bg-[#0A0E27] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.45)] transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
+      >
+        <img
+          src={ad.image}
+          alt={ad.title}
+          draggable={false}
+          className="absolute inset-0 h-full w-full object-cover select-none"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
+        <div className="absolute inset-x-0 bottom-0 p-3">
+          <p className="text-[11px] font-semibold text-white leading-tight line-clamp-2">{ad.title}</p>
+          <p className="mt-1.5 text-[10px] text-white/80 leading-snug line-clamp-2">{ad.subtitle}</p>
+          <span className="mt-2 inline-flex items-center justify-center rounded-full bg-white/90 px-2.5 py-1.5 text-[10px] font-semibold text-[#0A0E27] shadow-lg backdrop-blur transition group-hover:bg-white group-active:scale-[0.98]">
+            {ad.cta}
+          </span>
+        </div>
+      </a>
+    ))}
+  </div>
 
-          {/* Indicateurs — suivent le scroll manuel */}
-          <div className="mt-2 flex items-center justify-center gap-1.5">
-            {ADS.map((_, i) => (
-              <span
-                key={i}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === activeAdIndex ? "w-4 bg-[#7B5CFF]" : "w-1.5 bg-white/15"
-                }`}
-              />
-            ))}
-          </div>
-        </section>
+  {/* Indicateurs — suivent le scroll manuel */}
+  <div className="mt-2 flex items-center justify-center gap-1.5">
+    {ADS.map((_, i) => (
+      <span
+        key={i}
+        className={`h-1.5 rounded-full transition-all ${
+          i === activeAdIndex ? "w-4 bg-[#7B5CFF]" : "w-1.5 bg-white/15"
+        }`}
+      />
+    ))}
+  </div>
+</section>
       </div>
     </AppShell>
   );
