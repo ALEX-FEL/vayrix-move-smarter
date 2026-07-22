@@ -110,6 +110,24 @@ function Home() {
   );
   const carouselItems = [...VEHICLE_TYPES, ...VEHICLE_TYPES, ...VEHICLE_TYPES];
 
+  // ── Verrou anti-conflit : empêche handleVehicleScroll de "riposter"
+  // pendant un scrollTo() déclenché par le code (clic, correction de boucle,
+  // centrage au montage). Sans ça, chaque scrollTo() génère ses propres
+  // scroll events, qui rappellent handleVehicleScroll, qui peut recalculer
+  // et écraser la sélection qu'on vient de faire.
+  const isProgrammaticScroll = useRef(false);
+  const programmaticScrollTimeout = useRef<number | null>(null);
+
+  const lockProgrammaticScroll = (durationMs: number) => {
+    isProgrammaticScroll.current = true;
+    if (programmaticScrollTimeout.current) {
+      window.clearTimeout(programmaticScrollTimeout.current);
+    }
+    programmaticScrollTimeout.current = window.setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, durationMs);
+  };
+
   const centerVehicle = (index: number, behavior: ScrollBehavior = "smooth") => {
     const el = vehicleScrollRef.current;
     if (!el) return;
@@ -117,21 +135,34 @@ function Home() {
     const firstChild = el.children[0] as HTMLElement | undefined;
     if (!firstChild) return;
 
-    const cardWidth = firstChild.getBoundingClientRect().width + 12;
     const targetDisplayIndex = VEHICLE_TYPES.length + index;
     const child = el.children[targetDisplayIndex] as HTMLElement | undefined;
 
     if (!child) return;
 
+    // NOTE : ce calcul centre la carte (offsetLeft - moitié de la marge
+    // restante). Pour que le CSS snap soit d'accord avec cette position,
+    // les cartes utilisent maintenant `snap-center` au lieu de `snap-start`
+    // (voir plus bas dans le JSX). Sans ce changement, le navigateur
+    // "re-snappait" vers un autre point juste après ce scrollTo.
     const left = Math.max(0, child.offsetLeft - (el.clientWidth - child.clientWidth) / 2);
+
+    // Le scroll qui va suivre est déclenché par le code : on verrouille
+    // le handler pendant toute la durée estimée de l'animation smooth.
+    lockProgrammaticScroll(behavior === "smooth" ? 500 : 50);
     el.scrollTo({ left, behavior });
   };
 
   useEffect(() => {
     centerVehicle(vehicleIndex, "auto");
-  }, [vehicleIndex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleVehicleScroll = () => {
+    // Un scroll généré par notre propre code : on ignore, la logique de
+    // sélection a déjà été appliquée au clic / à l'init.
+    if (isProgrammaticScroll.current) return;
+
     const el = vehicleScrollRef.current;
     if (!el) return;
 
@@ -145,11 +176,13 @@ function Home() {
     const isNearEnd = el.scrollLeft + el.clientWidth > el.scrollWidth - threshold;
 
     if (isNearStart) {
+      lockProgrammaticScroll(50);
       el.scrollTo({ left: el.scrollLeft + groupWidth, behavior: "auto" });
       return;
     }
 
     if (isNearEnd) {
+      lockProgrammaticScroll(50);
       el.scrollTo({ left: el.scrollLeft - groupWidth, behavior: "auto" });
       return;
     }
@@ -176,6 +209,9 @@ function Home() {
   };
 
   const handleVehicleSelect = (id: typeof VEHICLE_TYPES[number]["id"], index: number) => {
+    // On fixe la sélection tout de suite : elle ne doit plus être écrasée
+    // par les scroll events intermédiaires générés par l'animation smooth
+    // qui va suivre (isProgrammaticScroll s'en charge dans handleVehicleScroll).
     setSelectedVehicle(id);
     setVehicleIndex(index);
     centerVehicle(index, "smooth");
@@ -328,27 +364,10 @@ function Home() {
               const item = VEHICLE_TYPES[realIndex];
               const active = vehicleIndex === realIndex;
               return (
-                // <button
-                //   key={v.id}
-                //   onClick={() => setSelectedVehicle(v.id)}
-                //   className={`snap-start shrink-0 w-[100px] h-[92px] rounded-2xl border overflow-hidden text-left transition select-none ${
-                //     active ? "border-[#7B5CFF]/70 shadow-glow bg-[#1a2348]" : "border-white/5 bg-[#141B3D]"
-                //   }`}
-                // >
-                //   <img
-                //     src={v.image}
-                //     alt={v.label}
-                //     draggable={false}
-                //     className="h-[60px] w-full object-cover"
-                //   />
-                //   {/* <p className="h-8 flex items-center justify-center text-xs font-semibold px-1 truncate">
-                //     {v.label}
-                //   </p> */}
-                // </button>
                 <button
                   key={`${item.id}-${i}`}
                   onClick={() => handleVehicleSelect(item.id, realIndex)}
-                  className={`snap-start shrink-0 w-[100px] rounded-2xl border overflow-hidden text-left transform-gpu transition-all duration-300 will-change-transform select-none ${
+                  className={`snap-center shrink-0 w-[100px] rounded-2xl border overflow-hidden text-left transform-gpu transition-all duration-300 will-change-transform select-none ${
                     active
                       ? "border-[#7B5CFF]/80 bg-[#1a2348] scale-110 -translate-y-2 z-20 shadow-[0_14px_30px_-10px_rgba(123,92,255,0.6)] ring-2 ring-[#7B5CFF]/40"
                       : "border-white/5 bg-[#141B3D] scale-90 opacity-70"
